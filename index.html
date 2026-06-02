@@ -250,47 +250,33 @@ section:nth-child(even){background:var(--bg-secondary)}
 /* ============================================================
    6. GAME PREVIEW
    ============================================================ */
-.preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
-.preview-card{
-  background:linear-gradient(160deg,#13294d,#0d2240);border-radius:var(--radius);
-  padding:24px;border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);
-  transition:transform .3s ease;
+.game-videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:2rem auto 0}
+.game-video-card{
+  background:rgba(15,52,96,.5);border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:1.25rem;text-align:center;
+  transition:transform .3s ease,box-shadow .3s ease;
 }
-.preview-card:hover{transform:translateY(-6px)}
-.preview-label{display:flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:600;color:#fff;font-size:16px;margin-bottom:8px}
-.preview-label .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.preview-hint{font-size:13.5px;color:var(--text-muted);margin-bottom:18px}
-.preview-stage{background:rgba(0,0,0,.22);border-radius:var(--radius-sm);padding:18px;min-height:210px;display:flex;flex-direction:column}
-
-/* memory grid */
-.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:auto 0}
-.mem-cell{aspect-ratio:1;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:22px;
-  background:linear-gradient(135deg,#1d3a66,#16294a);border:1px solid rgba(255,255,255,.08);
-  transition:transform .4s ease}
-.mem-cell.flip{background:linear-gradient(135deg,var(--teal),#3bb6ad);color:#10202b;animation:pop .5s ease}
-.mem-cell.flip.pink{background:linear-gradient(135deg,var(--pink),#e85a8a)}
-@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
-
-/* focus finder */
-.finder{position:relative;flex:1;border-radius:var(--radius-sm);overflow:hidden;background:radial-gradient(circle at 30% 20%,#1b2f57,#0c1c38)}
-.finder .obj{position:absolute;font-size:22px;animation:bob 3.5s ease-in-out infinite}
-.finder .target{filter:drop-shadow(0 0 8px var(--yellow));animation:bob 3s ease-in-out infinite,glow 2s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-@keyframes glow{0%,100%{opacity:.85}50%{opacity:1}}
-.finder-banner{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);padding:6px 12px;border-radius:50px;font-size:12.5px;color:#fff;font-weight:600;display:flex;align-items:center;gap:7px}
-.finder-banner .ico{color:var(--yellow)}
-
-/* speed dash */
-.speed-q{font-size:16px;color:#fff;font-weight:600;text-align:center;margin-bottom:14px}
-.speed-ans{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
-.speed-ans button{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;padding:11px;border-radius:10px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:.2s}
-.speed-ans button:hover{background:rgba(255,255,255,.1)}
-.speed-ans button.right{background:linear-gradient(135deg,var(--green),#27a85f);border-color:transparent}
-.timer-wrap{margin-top:auto}
-.timer-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px}
-.timer-bar{height:8px;border-radius:50px;background:rgba(255,255,255,.1);overflow:hidden}
-.timer-fill{height:100%;border-radius:50px;background:linear-gradient(90deg,var(--yellow),var(--orange));width:70%;animation:timer 4s linear infinite}
-@keyframes timer{0%{width:100%}100%{width:0%}}
+.game-video-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(78,205,196,.15)}
+.game-video-badge{
+  display:inline-block;background:var(--badge-color);color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
+  padding:4px 14px;border-radius:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;
+}
+.game-video-title{color:#fff;font-size:1.2rem;margin:.5rem 0}
+/* Video container — VERTICAL 9:16 ratio for YouTube Shorts */
+.game-video-container{
+  position:relative;width:100%;max-width:240px;margin:.75rem auto;
+  border-radius:12px;overflow:hidden;background:#0a0a1a;aspect-ratio:9/16;
+}
+.game-video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px}
+.game-video-desc{color:var(--text-body);font-size:.85rem;margin-top:.75rem;line-height:1.4}
+@media (max-width:768px){
+  .game-videos-grid{grid-template-columns:1fr;max-width:320px}
+  .game-video-container{max-width:200px}
+}
+@media (min-width:769px) and (max-width:1024px){
+  .game-videos-grid{grid-template-columns:repeat(2,1fr);max-width:600px}
+}
 .preview-note{margin-top:42px;text-align:center;color:var(--text-body);font-size:16px}
 .preview-note strong{color:var(--yellow)}
 
@@ -409,7 +395,7 @@ section:nth-child(even){background:var(--bg-secondary)}
    RESPONSIVE
    ============================================================ */
 @media (max-width:980px){
-  .cards-3,.preview-grid{grid-template-columns:1fr}
+  .cards-3{grid-template-columns:1fr}
   .interest-grid{grid-template-columns:repeat(2,1fr)}
   .steps{grid-template-columns:1fr;gap:18px}
   .step-arrow{transform:rotate(90deg);font-size:26px;padding:4px 0}
@@ -623,66 +609,50 @@ section:nth-child(even){background:var(--bg-secondary)}
     <div class="section-head reveal">
       <span class="eyebrow">Game Preview</span>
       <h2>What Your Child Will See</h2>
-      <p>Colorful, fun, and themed around THEIR world.</p>
+      <p>Real demos of our games. Colorful, fun, and themed around THEIR world.</p>
     </div>
-    <div class="preview-grid">
-      <!-- Memory Match -->
-      <div class="preview-card reveal d1" style="--accent:var(--pink)">
-        <div class="preview-label"><span class="dot"></span>Memory Match</div>
-        <div class="preview-hint">Find the matching pairs</div>
-        <div class="preview-stage">
-          <div class="mem-grid">
-            <div class="mem-cell flip pink">🦖</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell flip">🚀</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell flip pink">🦖</div>
-            <div class="mem-cell flip">🚀</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell">?</div>
-            <div class="mem-cell">?</div>
-          </div>
+    <div class="game-videos-grid">
+      <!-- MEMORY -->
+      <div class="game-video-card reveal d1">
+        <div class="game-video-badge" style="--badge-color:#FF6B9D">Memory</div>
+        <h3 class="game-video-title">Memory Match</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/vtqSbccmuCk?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Memory Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
         </div>
+        <p class="game-video-desc">Find matching pairs using characters from your child's world. Strengthens recall &amp; working memory.</p>
       </div>
-      <!-- Focus Finder -->
-      <div class="preview-card reveal d2" style="--accent:var(--teal)">
-        <div class="preview-label"><span class="dot"></span>Focus Finder</div>
-        <div class="preview-hint">Filter the distractions</div>
-        <div class="preview-stage">
-          <div class="finder">
-            <span class="obj" style="top:14%;left:12%">⭐</span>
-            <span class="obj target" style="top:20%;left:60%">🪐</span>
-            <span class="obj" style="top:46%;left:30%">☄️</span>
-            <span class="obj target" style="top:60%;left:74%">🪐</span>
-            <span class="obj" style="top:70%;left:18%">⭐</span>
-            <span class="obj target" style="top:34%;left:42%">🪐</span>
-            <span class="obj" style="top:54%;left:54%">🌙</span>
-            <span class="obj target" style="top:74%;left:46%">🪐</span>
-            <span class="obj target" style="top:12%;left:80%">🪐</span>
-            <div class="finder-banner"><span class="ico">🎯</span>Find 5 hidden planets!</div>
-          </div>
+      <!-- ATTENTION -->
+      <div class="game-video-card reveal d2">
+        <div class="game-video-badge" style="--badge-color:#4ECDC4">Attention</div>
+        <h3 class="game-video-title">Focus Finder</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/S8S2ukL9TeY?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Attention Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
         </div>
+        <p class="game-video-desc">Spot differences and filter distractions in themed scenes. Builds concentration &amp; visual attention.</p>
       </div>
-      <!-- Speed Dash -->
-      <div class="preview-card reveal d3" style="--accent:var(--yellow)">
-        <div class="preview-label"><span class="dot"></span>Speed Dash</div>
-        <div class="preview-hint">Answer fast — beat the clock</div>
-        <div class="preview-stage">
-          <div class="speed-q">Which dinosaur is the biggest? 🦕</div>
-          <div class="speed-ans">
-            <button>Raptor</button>
-            <button class="right">Brachiosaurus</button>
-            <button>Stego</button>
-            <button>Dodo</button>
-          </div>
-          <div class="timer-wrap">
-            <div class="timer-label"><span>Time left</span><span>⚡ Fast!</span></div>
-            <div class="timer-bar"><div class="timer-fill"></div></div>
-          </div>
+      <!-- SPEED -->
+      <div class="game-video-card reveal d3">
+        <div class="game-video-badge" style="--badge-color:#FFE66D;color:#1A1A2E">Speed</div>
+        <h3 class="game-video-title">Speed Dash</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/ozjo_IAoStg?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Speed Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
         </div>
+        <p class="game-video-desc">Quick-fire challenges where fast thinking wins. Sharpens processing speed &amp; reactions.</p>
       </div>
     </div>
     <p class="preview-note reveal">All visuals, questions, and content are themed around <strong>YOUR child's interests</strong>.</p>
