@@ -63,7 +63,7 @@ a{color:inherit;text-decoration:none}
 /* ---------- Layout helpers ---------- */
 .container{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
 
-section{position:relative;padding:96px 0}
+section{position:relative;padding:90px 0 84px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
 section:nth-child(even){background:var(--bg-secondary)}
 
 .section-head{text-align:center;max-width:760px;margin:0 auto 56px}
@@ -448,7 +448,7 @@ section:nth-child(even){background:var(--bg-secondary)}
   .cost-card{flex:1;min-width:200px}
 }
 @media (max-width:760px){
-  section{padding:70px 0}
+  section{padding:74px 0 72px}
   .container{padding:0 18px}
   .compare-2{grid-template-columns:1fr}
   .hero{padding:110px 0 70px}
@@ -470,6 +470,41 @@ section:nth-child(even){background:var(--bg-secondary)}
   .price-side{flex-direction:column}
   body{font-size:16px}
 }
+/* ============================================================
+   PRESENTATION MODE — slide navigation
+   ============================================================ */
+.slide-arrow{
+  position:fixed;top:50%;transform:translateY(-50%);z-index:1000;
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(78,205,196,.15);border:2px solid rgba(78,205,196,.3);color:var(--teal);
+  font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .3s ease,border-color .3s ease,transform .3s ease,box-shadow .3s ease,opacity .3s ease;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-family:'Space Grotesk',sans-serif;
+}
+.slide-arrow:hover{background:rgba(78,205,196,.3);border-color:var(--teal);transform:translateY(-50%) scale(1.1);box-shadow:0 0 20px rgba(78,205,196,.3)}
+.slide-arrow-prev{left:20px}
+.slide-arrow-next{right:20px}
+.slide-arrow.hidden{opacity:0;pointer-events:none}
+.slide-dots{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:1000;
+  display:flex;gap:10px;padding:10px 18px;max-width:78vw;flex-wrap:wrap;justify-content:center;
+  background:rgba(26,26,46,.82);border-radius:24px;border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.slide-dot{width:10px;height:10px;border-radius:50%;background:var(--text-muted);cursor:pointer;border:none;padding:0;transition:all .3s ease}
+.slide-dot.active{background:var(--teal);width:12px;height:12px;box-shadow:0 0 8px rgba(78,205,196,.5)}
+.slide-dot:hover{background:var(--teal);opacity:.7}
+.slide-counter{position:fixed;bottom:24px;right:28px;z-index:1000;color:var(--text-muted);font-size:13px;font-family:'Inter',sans-serif;background:rgba(26,26,46,.7);padding:5px 12px;border-radius:50px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@media (max-width:768px){
+  .slide-arrow{width:40px;height:40px;font-size:21px}
+  .slide-arrow-prev{left:10px}
+  .slide-arrow-next{right:10px}
+  .slide-dots{bottom:14px;gap:7px;padding:8px 12px;max-width:70vw}
+  .slide-dot{width:8px;height:8px}
+  .slide-dot.active{width:10px;height:10px}
+  .slide-counter{bottom:14px;right:12px;font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){ .slide-arrow{transition:opacity .3s ease} }
 </style>
 </head>
 <body>
@@ -945,21 +980,9 @@ section:nth-child(even){background:var(--bg-secondary)}
     revealEls.forEach(function(el){ el.classList.add('visible'); });
   }
 
-  /* ---- Sticky header after hero ---- */
+  /* ---- Sticky header: always visible (presentation mode) ---- */
   var header = document.getElementById('siteHeader');
-  var hero = document.getElementById('hero');
-  if('IntersectionObserver' in window && hero){
-    var headObs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        header.classList.toggle('show', !e.isIntersecting);
-      });
-    },{threshold:0, rootMargin:'-80px 0px 0px 0px'});
-    headObs.observe(hero);
-  }else{
-    window.addEventListener('scroll', function(){
-      header.classList.toggle('show', window.scrollY > window.innerHeight*0.8);
-    });
-  }
+  if(header) header.classList.add('show');
 
   /* ---- Animate dashboard bars when visible ---- */
   var dash = document.getElementById('dash');
@@ -992,6 +1015,99 @@ section:nth-child(even){background:var(--bg-secondary)}
       window.scrollTo({top: top, behavior: 'smooth'});
     });
   });
+})();
+</script>
+
+<!-- ===== PRESENTATION NAVIGATION ===== -->
+<button class="slide-arrow slide-arrow-prev hidden" id="slidePrev" type="button" aria-label="Previous slide">‹</button>
+<button class="slide-arrow slide-arrow-next" id="slideNext" type="button" aria-label="Next slide">›</button>
+<div class="slide-dots" id="slideDots" aria-label="Slide navigation"></div>
+<div class="slide-counter" id="slideCounter">1 / 12</div>
+
+<script>
+(function(){
+  "use strict";
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section'));
+  var total = sections.length;
+  if(!total) return;
+
+  var current = 0;
+  var prevBtn = document.getElementById('slidePrev');
+  var nextBtn = document.getElementById('slideNext');
+  var dotsBox = document.getElementById('slideDots');
+  var counter = document.getElementById('slideCounter');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* build clickable dots */
+  sections.forEach(function(_, i){
+    var d = document.createElement('button');
+    d.className = 'slide-dot' + (i===0 ? ' active' : '');
+    d.type = 'button';
+    d.title = 'Slide ' + (i+1);
+    d.setAttribute('aria-label', 'Go to slide ' + (i+1));
+    d.addEventListener('click', function(){ goToSlide(i); });
+    dotsBox.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsBox.children);
+
+  function goToSlide(i){
+    if(i<0 || i>=total) return;
+    current = i;
+    sections[i].scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'start'});
+    updateUI();
+  }
+  function nextSlide(){ goToSlide(current + 1); }
+  function prevSlide(){ goToSlide(current - 1); }
+
+  function updateUI(){
+    prevBtn.classList.toggle('hidden', current === 0);
+    nextBtn.classList.toggle('hidden', current === total - 1);
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+    if(counter) counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  prevBtn.addEventListener('click', prevSlide);
+  nextBtn.addEventListener('click', nextSlide);
+
+  /* keyboard: left/right step slides; up/down left for native scrolling */
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if(e.key === 'ArrowRight'){ e.preventDefault(); nextSlide(); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); prevSlide(); }
+  });
+
+  /* keep arrows/dots/counter in sync when the user scrolls manually */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          var idx = sections.indexOf(en.target);
+          if(idx !== -1 && idx !== current){ current = idx; updateUI(); }
+        }
+      });
+    }, {threshold: 0.5});
+    sections.forEach(function(s){ io.observe(s); });
+  }
+
+  /* mobile swipe — guarded so it never hijacks scrolling of tall slides */
+  var tY=0, tX=0, tT=0;
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length > 1) return;
+    tY = e.touches[0].clientY; tX = e.touches[0].clientX; tT = Date.now();
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dy = tY - e.changedTouches[0].clientY;
+    var dx = tX - e.changedTouches[0].clientX;
+    if(Date.now() - tT > 600) return;          // slow drag = a scroll, not a flick
+    if(Math.abs(dy) < 60) return;              // not enough vertical movement
+    if(Math.abs(dx) > Math.abs(dy)) return;    // mostly horizontal
+    var sec = sections[current];
+    if(sec && sec.scrollHeight > window.innerHeight + 24) return; // tall slide: let it scroll
+    if(dy > 0) nextSlide(); else prevSlide();
+  }, {passive:true});
+
+  updateUI();
 })();
 </script>
 </body>
