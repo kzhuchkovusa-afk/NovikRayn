@@ -149,6 +149,17 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
 .muted{color:var(--text-muted)}
 .tags{display:flex;flex-wrap:wrap;gap:8px}
 .tag{display:inline-block;padding:6px 13px;border-radius:50px;background:rgba(78,205,196,.14);border:1px solid rgba(78,205,196,.3);color:#bdeee9;font-size:13.5px;font-weight:500}
+.btn-submit{width:100%;color:#08210f;background:linear-gradient(135deg,var(--green),#27c06a);box-shadow:0 10px 26px rgba(46,204,113,.3);font-size:18px;margin-bottom:16px}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 34px rgba(46,204,113,.45)}
+.btn-submit:disabled{opacity:.75;cursor:default}
+.submit-success{display:none;text-align:center;margin:4px 0 22px;padding:24px 22px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(46,204,113,.16),rgba(78,205,196,.1));border:1px solid rgba(46,204,113,.4)}
+.submit-success.show{display:block;animation:pop .4s ease}
+.submit-success p{color:#fff;font-weight:600;font-size:16.5px;margin-top:14px}
+.check-mark{width:66px;height:66px}
+.check-mark circle{fill:none;stroke:var(--green);stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151;animation:cmDraw .6s ease forwards}
+.check-mark path{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:42;stroke-dashoffset:42;animation:cmDraw .4s .5s ease forwards}
+@keyframes cmDraw{to{stroke-dashoffset:0}}
+.backup-label{text-align:center;color:var(--text-muted);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;margin:6px 0 10px}
 .review-actions{display:flex;gap:14px;flex-wrap:wrap}
 .review-actions .btn{flex:1;min-width:200px}
 .btn-copy{color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);box-shadow:0 10px 26px rgba(78,205,196,.3)}
@@ -420,6 +431,13 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
 
     <div class="summary" id="summary"></div>
 
+    <button class="btn btn-submit" id="submitBtn">✅ Submit to KidsBrain</button>
+    <div class="submit-success" id="submitSuccess" role="status" aria-live="polite">
+      <svg class="check-mark" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-18"/></svg>
+      <p id="submitSuccessMsg"></p>
+    </div>
+
+    <div class="backup-label">Backup options</div>
     <div class="review-actions">
       <button class="btn btn-copy" id="copyBtn">📋 Copy to Clipboard</button>
       <button class="btn btn-email" id="emailBtn">✉️ Send via Email</button>
@@ -442,6 +460,8 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
 
   /* ===== CONFIG — set your real inbox here ===== */
   const CONTACT_EMAIL = 'kidsbrain@email.com';
+  /* Paste your deployed Google Apps Script Web App URL here (see SETUP.md). */
+  const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
   const STORAGE_KEY = 'kidsbrain_questionnaire_v1';
   const TOTAL = 7;                 // input steps (step 8 is the review)
@@ -691,6 +711,43 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
     const body=summaryText();
     window.location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
   }
+  /* ---------- submit to Google Sheets ---------- */
+  function scriptConfigured(){ return /^https?:\/\//.test(GOOGLE_SCRIPT_URL) && GOOGLE_SCRIPT_URL.indexOf('YOUR_GOOGLE')<0; }
+  function buildPayload(){
+    const s=state;
+    const interests = (s.interestsOther && s.interestsOther.trim())
+      ? s.interests.concat(['Other: '+s.interestsOther.trim()])
+      : s.interests.slice();
+    return {
+      childName:s.childName, age:s.age, gender:s.gender,
+      interests:interests,
+      tvShows:s.tvShows, youtubeChannels:s.youtube,
+      contentType:s.contentTypes,
+      brainFocusPrimary:s.focusPrimary, brainFocusSecondary:s.focusSecondary,
+      parentHopes:s.expectation, childStruggles:s.struggles,
+      screenTimeLimit:s.screenTime,
+      contentToAvoid:s.avoid, specialNotes:s.notes,
+      parentName:s.parentName, email:s.email, phone:s.phone, contactMethod:s.contactMethod
+    };
+  }
+  async function submitToGoogleSheets(payload){
+    if(!scriptConfigured()){ console.warn('GOOGLE_SCRIPT_URL not set — skipping cloud save (Copy / Email still work).'); return false; }
+    try{
+      await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+      console.log('Saved to Google Sheets'); return true;
+    }catch(err){ console.error('Failed to save:', err); return false; }
+  }
+  async function doSubmit(){
+    const btn=$('#submitBtn'); if(!btn || btn.dataset.done==='1') return;
+    btn.disabled=true; btn.textContent='Sending…';
+    await submitToGoogleSheets(buildPayload());
+    btn.dataset.done='1'; btn.textContent='✓ Submitted';
+    const box=$('#submitSuccess');
+    $('#submitSuccessMsg').textContent='Thank you! We received your answers and will start building '+displayName()+"'s games soon!";
+    box.classList.add('show');
+    if(box.scrollIntoView) box.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
   function resetAll(){
     if(!window.confirm('Start over and clear all your answers?')) return;
     try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
@@ -700,6 +757,8 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
     ['childName','parentName','email'].forEach(f=> setError(f,''));
     renderSecondary();
     $('#copyConfirm').classList.remove('show');
+    const sb=$('#submitBtn'); if(sb){ sb.disabled=false; sb.dataset.done=''; sb.textContent='✅ Submit to KidsBrain'; }
+    $('#submitSuccess').classList.remove('show');
     go(1,'back');
   }
 
@@ -762,6 +821,7 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
   $('#copyBtn').addEventListener('click', doCopy);
   $('#emailBtn').addEventListener('click', doEmail);
   $('#resetBtn').addEventListener('click', resetAll);
+  $('#submitBtn').addEventListener('click', doSubmit);
 
   /* ---------- init ---------- */
   buildDots();
