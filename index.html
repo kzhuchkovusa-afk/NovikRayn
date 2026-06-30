@@ -505,6 +505,81 @@ section:nth-child(even){background:var(--bg-secondary)}
   .slide-counter{bottom:14px;right:12px;font-size:12px}
 }
 @media (prefers-reduced-motion:reduce){ .slide-arrow{transition:opacity .3s ease} }
+/* ============================================================
+   OFFER UPGRADE — urgency pricing, guarantee, value stack, age worry
+   ============================================================ */
+.hero-pill{display:inline-flex;align-items:center;gap:8px;margin:2px auto 22px;padding:8px 18px;border-radius:50px;background:rgba(78,205,196,.1);border:1px solid rgba(78,205,196,.3);color:var(--teal);font-weight:600;font-size:15px}
+.was{text-decoration:line-through;color:var(--text-muted);font-family:'Space Grotesk',sans-serif}
+.now{color:var(--green);font-weight:700;font-family:'Space Grotesk',sans-serif}
+/* pricing card */
+.price-card{text-align:center}
+.price-urgency{display:inline-block;margin:0 0 16px;padding:8px 16px;border-radius:50px;background:rgba(255,138,92,.12);border:1px solid rgba(255,138,92,.35);color:var(--orange);font-weight:600;font-size:13.5px;line-height:1.4}
+.value-stack{text-align:left;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 18px;margin:0 0 22px}
+.vs-head{font-family:'Space Grotesk',sans-serif;font-weight:600;color:#fff;font-size:14.5px;margin-bottom:10px}
+.vs-row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13.5px;color:var(--text-body)}
+.vs-row span{flex:1}
+.vs-row b{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:600;white-space:nowrap}
+.vs-row.vs-total{margin-top:4px;padding-top:11px;border-top:1px solid rgba(255,255,255,.18);border-bottom:none}
+.vs-row.vs-total span{color:#fff;font-weight:700}
+.vs-row.vs-total b{color:var(--yellow);font-size:18px}
+.pc-price{display:flex;align-items:baseline;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.pc-price .was{font-size:30px}
+.pc-price .now{font-size:72px;line-height:1}
+.save-tag{align-self:center;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);color:var(--green);font-weight:600;font-size:13px;padding:6px 12px;border-radius:50px;white-space:nowrap}
+.countdown-pill{display:inline-flex;align-items:center;gap:8px;margin:0 0 22px;padding:9px 18px;border-radius:50px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#ffb3aa;font-weight:600;font-size:14px}
+.countdown-pill [data-countdown]{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.cost-card.win .amt{display:flex;align-items:baseline;gap:8px}
+.cost-card.win .was{font-size:20px}
+.cost-card.win .now{font-size:28px}
+.cost-card .cc-note{font-size:13px;color:var(--text-muted);margin-top:4px}
+/* guarantee band */
+.guarantee-band{max-width:820px;margin:0 auto;text-align:center;background:linear-gradient(160deg,rgba(46,204,113,.1),rgba(78,205,196,.05));border:1px solid rgba(46,204,113,.35);border-radius:24px;padding:46px 38px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.guar-shield{font-size:62px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(46,204,113,.4))}
+.guarantee-band h2{font-size:clamp(26px,4.4vw,42px);margin:6px 0 18px}
+.guar-body{font-size:clamp(16px,2.2vw,19px);color:var(--text-body);line-height:1.65;max-width:680px;margin:0 auto 24px}
+.guar-body strong{color:#fff}
+.guar-seal{display:inline-block;background:linear-gradient(135deg,var(--green),#27a85f);color:#06210f;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(14px,2vw,17px);padding:13px 24px;border-radius:50px;box-shadow:0 12px 30px rgba(46,204,113,.35);margin-bottom:22px}
+.guar-kicker{font-size:clamp(16px,2.2vw,19px);color:#fff;line-height:1.6;max-width:680px;margin:0 auto}
+.guar-kicker strong{color:var(--green)}
+.cost-wait{margin:30px auto 0;max-width:680px;padding:20px 24px;border-radius:16px;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);text-align:left}
+.cw-head{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--orange);font-size:13px;letter-spacing:.08em;margin-bottom:8px;text-transform:uppercase}
+.cost-wait p{color:var(--text-body);font-size:15px;line-height:1.6;margin:0}
+.cost-wait strong{color:#fff}
+/* age-worry */
+.age-body{max-width:760px;margin:0 auto 34px}
+.age-body p{font-size:clamp(16px,2.2vw,18px);color:var(--text-body);line-height:1.7;margin-bottom:18px}
+.age-body p:last-child{margin-bottom:0}
+.age-body strong{color:#fff}
+.age-body em{color:var(--yellow);font-style:normal}
+.age-cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:820px;margin:0 auto 26px}
+.age-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:26px 24px;transition:transform .3s ease,box-shadow .3s ease}
+.age-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.age-card-head{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:18px;margin-bottom:12px}
+.age-card-body{color:var(--teal);font-size:16px;font-weight:500;margin-bottom:16px}
+.age-card-foot{color:var(--text-muted);font-size:13.5px;font-style:italic;padding-top:13px;border-top:1px dashed rgba(255,255,255,.12)}
+.age-caption{text-align:center;color:#fff;font-weight:600;font-size:clamp(16px,2.4vw,20px);max-width:640px;margin:0 auto 20px}
+.age-close{text-align:center;color:var(--text-body);font-size:clamp(16px,2.2vw,19px);line-height:1.6;max-width:720px;margin:0 auto;font-weight:600}
+/* two-path close + cta countdown */
+.two-path{max-width:620px;margin:6px auto 22px;text-align:left;background:rgba(15,52,96,.5);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:24px 26px}
+.tp-head{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:18px;margin-bottom:14px;text-align:center}
+.tp-opt{display:flex;gap:12px;align-items:flex-start;padding:12px 0;font-size:15.5px;line-height:1.5}
+.tp-opt+.tp-opt{border-top:1px solid rgba(255,255,255,.08)}
+.tp-num{font-size:20px;flex:none;line-height:1.4}
+.tp-bad{color:var(--text-muted)}
+.tp-good{color:var(--text-white)}
+.tp-good strong{color:var(--green)}
+.tp-bad strong{color:#ff9a8f}
+.tp-foot{text-align:center;color:var(--yellow);font-weight:600;font-size:15px;margin-top:12px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+.cta-countdown{display:inline-flex;align-items:center;gap:8px;margin:0 auto 18px;padding:9px 18px;border-radius:50px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#ffb3aa;font-weight:600;font-size:14px}
+.cta-countdown [data-countdown]{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .age-cards{grid-template-columns:1fr;gap:16px}
+  .pc-price .now{font-size:58px}
+  .pc-price .was{font-size:26px}
+  .two-path{padding:20px 18px}
+  .guarantee-band{padding:34px 22px}
+  .vs-row{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -513,7 +588,7 @@ section:nth-child(even){background:var(--bg-secondary)}
 <header class="site-header" id="siteHeader">
   <div class="container">
     <a href="#hero" class="brand"><span class="logo">🧠</span><span>Kids<b>Brain</b></span></a>
-    <a href="questionnaire.html" class="btn btn-sm">Get Started — $30</a>
+    <a href="https://ryansgames.kids/questionnaire" class="btn btn-sm">Get Started →</a>
   </div>
 </header>
 
@@ -531,9 +606,10 @@ section:nth-child(even){background:var(--bg-secondary)}
       <span class="skill-tag"><span class="ico">🎯</span>Attention</span>
       <span class="skill-tag"><span class="ico">⚡</span>Fast Thinking</span>
     </div>
+    <div class="hero-pill reveal d1">👦👧 Custom-built for ages 3–9</div>
     <p class="tagline reveal d2">Every game built around what <em>YOUR</em> child loves</p>
     <p class="subnote reveal d2"><span class="ico">🛡️</span>With built-in screen time control for parents</p>
-    <div class="reveal d3"><a href="questionnaire.html" class="btn btn-lg">Get Started — $30 for 3 Games</a></div>
+    <div class="reveal d3"><a href="https://ryansgames.kids/questionnaire" class="btn btn-lg">Get Started →</a></div>
   </div>
 </section>
 
@@ -678,6 +754,36 @@ section:nth-child(even){background:var(--bg-secondary)}
       </div>
     </div>
     <p class="interest-bottom reveal">Unicorns? Cars? Cooking? Animals? Lego? Pokemon? <span>Tell us what they love. We do the rest.</span></p>
+  </div>
+</section>
+
+<!-- ===== 5.5 AGE WORRY ===== -->
+<section id="age-worry">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--orange)">Age Worry</span>
+      <h2>"Won't This Be Boring for My Older Kid?"</h2>
+      <p>Most parents get this backwards. Fun doesn't come from age — it comes from interest.</p>
+    </div>
+    <div class="age-body reveal">
+      <p>A 3-year-old and a 9-year-old don't want the same things. A toddler might light up at farm animals — your nine-year-old would roll their eyes. But a nine-year-old obsessed with Roblox? That toddler wouldn't have the faintest idea what's going on.</p>
+      <p>That's exactly why these games work across the whole age range. We don't build "a kids' game." We build <strong>your child's</strong> game — themed around the one thing <em>they</em> can't stop talking about. A Roblox-mad 9-year-old gets a Roblox world. A dinosaur-crazy 5-year-old gets dinosaurs. The fun is locked to the interest, not the birthday.</p>
+      <p>And it never feels too easy, either. Every game has multiple difficulty levels — so an older child gets a real challenge, not baby stuff. The theme matches what they love; the difficulty matches what they can handle.</p>
+    </div>
+    <div class="age-cards reveal">
+      <div class="age-card">
+        <div class="age-card-head">Age 5 · loves dinosaurs 🦕</div>
+        <div class="age-card-body">Dino memory match · fossil hunt · volcano speed quiz</div>
+        <div class="age-card-foot">A 9-year-old would find it too young.</div>
+      </div>
+      <div class="age-card">
+        <div class="age-card-head">Age 9 · loves Roblox 🎮</div>
+        <div class="age-card-body">Avatar pairs · obby logic · speed challenges</div>
+        <div class="age-card-foot">A 5-year-old wouldn't even get it.</div>
+      </div>
+    </div>
+    <p class="age-caption reveal">Same 3 games. Completely different worlds. That's the whole point.</p>
+    <p class="age-close reveal">Don't worry about whether your child is "too old" for this. The only question that matters is which interest they love most — because that's where all the fun comes from.</p>
   </div>
 </section>
 
@@ -904,8 +1010,20 @@ section:nth-child(even){background:var(--bg-secondary)}
     <div class="pricing-wrap">
       <div class="price-card reveal d1">
         <div class="pc-name">KidsBrain Bundle</div>
-        <div class="pc-amount">$30</div>
+        <div class="value-stack">
+          <div class="vs-head">Here's everything you get:</div>
+          <div class="vs-row"><span>3 custom-built games (memory, attention, speed), themed to your child</span><b>$120</b></div>
+          <div class="vs-row"><span>Personal child account + login</span><b>$20</b></div>
+          <div class="vs-row"><span>Parent progress dashboard</span><b>$40</b></div>
+          <div class="vs-row"><span>Screen-time controls</span><b>$20</b></div>
+          <div class="vs-row"><span>Multiple difficulty levels + unlimited replays</span><b>$20</b></div>
+          <div class="vs-row"><span>Up to 3 rounds of revisions until you love it</span><b>$60</b></div>
+          <div class="vs-row vs-total"><span>Total value</span><b>$280</b></div>
+        </div>
+        <div class="price-urgency">⏳ Today only — price returns to $50 at midnight</div>
+        <div class="pc-price"><span class="was">$50</span><span class="now">$30</span><span class="save-tag">Save $20 today</span></div>
         <div class="pc-sub">one-time · no subscription · forever</div>
+        <div class="countdown-pill">Offer ends in <span data-countdown>00:00:00</span></div>
         <ul class="price-list">
           <li><span class="ico">✓</span>3 custom games</li>
           <li><span class="ico">✓</span>Themed to your child's interests</li>
@@ -914,8 +1032,9 @@ section:nth-child(even){background:var(--bg-secondary)}
           <li><span class="ico">✓</span>Screen time controls</li>
           <li><span class="ico">✓</span>Multiple difficulty levels</li>
           <li><span class="ico">✓</span>Unlimited replays</li>
+          <li><span class="ico">✓</span>Up to 3 rounds of revisions — or 100% refund</li>
         </ul>
-        <a href="questionnaire.html" class="btn btn-lg">Get Started — $30</a>
+        <a href="https://ryansgames.kids/questionnaire" class="btn btn-lg">Get Started — $30 Today →</a>
       </div>
       <div class="price-side reveal d2">
         <div class="cost-card">
@@ -927,9 +1046,28 @@ section:nth-child(even){background:var(--bg-secondary)}
           <div class="amt">$10–15<span style="font-size:15px;color:var(--text-muted)">/month</span></div>
         </div>
         <div class="cost-card win">
-          <div class="label">KidsBrain (one-time, forever)</div>
-          <div class="amt">$30 <span style="font-size:15px">total</span></div>
+          <div class="label">KidsBrain — today only</div>
+          <div class="amt"><span class="was">$50</span><span class="now">$30</span></div>
+          <div class="cc-note">one-time, forever</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11.5 GUARANTEE ===== -->
+<section id="guarantee">
+  <div class="container">
+    <div class="guarantee-band reveal">
+      <div class="guar-shield">🛡️</div>
+      <span class="eyebrow" style="color:var(--green)">Zero Risk</span>
+      <h2>You Don't Risk a Single Dollar</h2>
+      <p class="guar-body">Here's my promise. I personally build your child's 3 games by hand. You get <strong>up to 3 rounds of changes</strong> — tell me what to adjust and I'll rebuild until it fits your child. If after those 3 tries you still don't love it, I refund <strong>100% of your money</strong>. No forms, no hoops, no hard feelings. You take zero risk — I take all of it.</p>
+      <div class="guar-seal">🛡️ 100% Money-Back Guarantee — or you pay nothing</div>
+      <p class="guar-kicker">So your choice is simple: a child who plays games they love and a brain that gets stronger — or $30 back in your pocket. <strong>There's no version of this where you lose.</strong></p>
+      <div class="cost-wait">
+        <div class="cw-head">What waiting costs you</div>
+        <p>Tomorrow this is <strong>$50, not $30</strong>. And tonight your child spends another 2 hours on YouTube with nothing to show for it. The deal resets at midnight — the screen-time problem doesn't.</p>
       </div>
     </div>
   </div>
@@ -940,17 +1078,24 @@ section:nth-child(even){background:var(--bg-secondary)}
   <div class="container">
     <h2 class="reveal">Give Your Child Games They'll Actually <em>LOVE</em></h2>
     <p class="lead reveal d1">While their brain gets stronger every single day</p>
-    <div class="reveal d2"><a href="questionnaire.html" class="btn btn-pink btn-lg">Get Started Today</a></div>
+    <div class="two-path reveal d1">
+      <div class="tp-head">Two ways to leave this page:</div>
+      <div class="tp-opt tp-bad"><span class="tp-num">①</span><span>Close it. Pay <strong>$50</strong> later. Your child keeps scrolling YouTube tonight.</span></div>
+      <div class="tp-opt tp-good"><span class="tp-num">②</span><span>Get started now. Pay <strong>$30</strong>. If you don't love it, get every cent back.</span></div>
+      <div class="tp-foot">One of these costs you nothing to try.</div>
+    </div>
+    <div class="cta-countdown reveal d2">⏳ Today only — offer ends in <span data-countdown>00:00:00</span></div>
+    <div class="reveal d2"><a href="https://ryansgames.kids/questionnaire" class="btn btn-pink btn-lg">Get Started — $30 Today →</a></div>
     <div class="process-reminder reveal d2">
       <span>Tell us about your child</span><span class="arr">→</span>
       <span>We build the games</span><span class="arr">→</span>
       <span>They play &amp; grow</span>
     </div>
     <div class="badges reveal d3">
-      <span class="tb"><span class="ico">✓</span>No risk</span>
+      <span class="tb"><span class="ico">✓</span>100% money-back</span>
       <span class="tb"><span class="ico">🛡️</span>Screen time controlled</span>
-      <span class="tb"><span class="ico">💲</span>One-time $30</span>
-      <span class="tb"><span class="ico">⭐</span>Satisfaction guaranteed</span>
+      <span class="tb"><span class="ico">⏳</span>$30 today (reg. $50)</span>
+      <span class="tb"><span class="ico">⭐</span>Built by a real person</span>
     </div>
     <p class="footnote reveal">Your child deserves games made just for them.</p>
   </div>
@@ -959,7 +1104,7 @@ section:nth-child(even){background:var(--bg-secondary)}
 <footer class="site-foot">
   <div class="container">
     <div class="brand"><span class="logo">🧠</span><span>Kids<b>Brain</b></span></div>
-    <div>Custom cognitive games for children aged 6–10.</div>
+    <div>Custom cognitive games for children aged 3–9.</div>
   </div>
 </footer>
 
@@ -1022,7 +1167,7 @@ section:nth-child(even){background:var(--bg-secondary)}
 <button class="slide-arrow slide-arrow-prev hidden" id="slidePrev" type="button" aria-label="Previous slide">‹</button>
 <button class="slide-arrow slide-arrow-next" id="slideNext" type="button" aria-label="Next slide">›</button>
 <div class="slide-dots" id="slideDots" aria-label="Slide navigation"></div>
-<div class="slide-counter" id="slideCounter">1 / 12</div>
+<div class="slide-counter" id="slideCounter">1 / 14</div>
 
 <script>
 (function(){
@@ -1108,6 +1253,24 @@ section:nth-child(even){background:var(--bg-secondary)}
   }, {passive:true});
 
   updateUI();
+})();
+</script>
+
+<!-- ===== TODAY-ONLY COUNTDOWN (drives all [data-countdown]) ===== -->
+<script>
+(function(){
+  var els = document.querySelectorAll('[data-countdown]');
+  if(!els.length) return;
+  function nextMidnight(){ var n=new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()+1, 0,0,0,0); }
+  function pad(x){ return String(x).padStart(2,'0'); }
+  function tick(){
+    var d = nextMidnight() - new Date();
+    if(d<0) d=0;
+    var t = pad(Math.floor(d/3.6e6))+':'+pad(Math.floor((d%3.6e6)/6e4))+':'+pad(Math.floor((d%6e4)/1e3));
+    for(var i=0;i<els.length;i++) els[i].textContent = t;
+  }
+  tick();
+  setInterval(tick, 1000);
 })();
 </script>
 </body>
