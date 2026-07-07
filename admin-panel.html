@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>KidsBrain Admin — Orders</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-main:#1A1A2E;--bg-secondary:#16213E;--bg-card:#0F3460;
+  --teal:#4ECDC4;--pink:#FF6B9D;--yellow:#FFE66D;--orange:#FF8A5C;--green:#2ECC71;--red:#E74C3C;
+  --text-white:#fff;--text-body:#B8C5D6;--text-muted:#7B8DA3;
+  --radius:16px;--radius-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg-main);color:var(--text-body);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;min-height:100vh}
+h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-white);line-height:1.2}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 22px 60px}
+
+/* header */
+.admin-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+.admin-head .brand{display:flex;align-items:center;gap:10px}
+.admin-head .logo{font-size:30px}
+.admin-head h1{font-size:28px}
+.admin-head .sub{color:var(--text-muted);font-size:14.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;padding:11px 20px;border:none;border-radius:50px;cursor:pointer;transition:.2s;color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);box-shadow:0 8px 22px rgba(78,205,196,.28)}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 28px rgba(78,205,196,.4)}
+.btn:disabled{opacity:.6;cursor:default}
+.btn.spin{position:relative}
+
+.note{margin:16px 0 22px;padding:12px 16px;border-radius:var(--radius-sm);background:rgba(255,230,109,.08);border:1px solid rgba(255,230,109,.3);color:var(--text-body);font-size:13.5px}
+.note b{color:var(--yellow)}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:26px}
+.stat{background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:18px 20px}
+.stat .num{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;line-height:1;color:#fff}
+.stat .lbl{font-size:13px;color:var(--text-muted);margin-top:6px}
+.stat.t-total .num{color:#fff}
+.stat.t-new .num{color:var(--yellow)}
+.stat.t-prog .num{color:var(--teal)}
+.stat.t-done .num{color:var(--green)}
+
+/* controls */
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:22px}
+.search{flex:1;min-width:200px;position:relative}
+.search input{width:100%;height:46px;background:var(--bg-card);border:1px solid rgba(255,255,255,.12);border-radius:50px;color:#fff;font-family:inherit;font-size:15px;padding:0 18px 0 42px}
+.search input::placeholder{color:#5d6f88}
+.search input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,205,196,.18)}
+.search .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:15px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:10px 16px;border-radius:50px;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--text-body);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:.2s}
+.tab:hover{border-color:rgba(255,255,255,.35);color:#fff}
+.tab.active{color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);border-color:transparent}
+.tab .count{opacity:.7;margin-left:6px}
+
+/* order cards */
+.orders{display:flex;flex-direction:column;gap:16px}
+.order-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:20px 22px;transition:transform .2s ease,box-shadow .2s ease;border-left:4px solid var(--status-c,var(--yellow))}
+.order-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.oc-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.status-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:50px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.status-badge .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+.st-new{color:var(--yellow);background:rgba(255,230,109,.12)}
+.st-prog{color:var(--teal);background:rgba(78,205,196,.12)}
+.st-done{color:var(--green);background:rgba(46,204,113,.12)}
+.oc-date{color:var(--text-muted);font-size:13px}
+.oc-body{display:flex;flex-direction:column;gap:5px;margin-bottom:16px}
+.oc-line{font-size:15px;color:var(--text-body)}
+.oc-line b{color:#fff;font-weight:600}
+.oc-line .em{color:var(--text-muted)}
+.oc-actions{display:flex;gap:10px;flex-wrap:wrap}
+.oc-actions button{padding:9px 16px;border-radius:50px;border:1px solid rgba(255,255,255,.14);background:transparent;color:var(--text-body);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:.2s}
+.oc-actions button:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.oc-actions .view{color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);border-color:transparent}
+.oc-actions .view:hover{transform:translateY(-1px)}
+.oc-actions .mk-prog:hover{border-color:var(--teal);color:var(--teal)}
+.oc-actions .mk-done:hover{border-color:var(--green);color:var(--green)}
+
+/* states */
+.state{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.state .big{font-size:40px;margin-bottom:14px}
+.state h3{color:#fff;margin-bottom:8px;font-size:20px}
+.state code{background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;color:var(--teal);font-size:13px;word-break:break-all}
+.spinner{width:38px;height:38px;border-radius:50%;border:4px solid rgba(78,205,196,.2);border-top-color:var(--teal);margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(8,12,24,.72);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:100;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:linear-gradient(160deg,#13294d,#0d2240);border:1px solid rgba(255,255,255,.1);border-radius:20px;max-width:640px;width:100%;padding:0;box-shadow:0 30px 70px rgba(0,0,0,.6);animation:rise .3s ease}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 26px;border-bottom:1px solid rgba(255,255,255,.08);position:sticky;top:0;background:#102444;border-radius:20px 20px 0 0}
+.modal-head h2{font-size:21px}
+.modal-head .x{background:none;border:none;color:var(--text-muted);font-size:26px;cursor:pointer;line-height:1;padding:0 4px}
+.modal-head .x:hover{color:#fff}
+.modal-body{padding:22px 26px 28px}
+.m-sec{padding:16px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.m-sec:last-child{border-bottom:none}
+.m-sec h4{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+.m-row{display:flex;gap:14px;margin-bottom:8px;font-size:15px}
+.m-row:last-child{margin-bottom:0}
+.m-label{color:var(--text-muted);min-width:140px;flex:none}
+.m-val{color:#fff;word-break:break-word}
+.m-val a{color:var(--teal)}
+.muted{color:var(--text-muted)}
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{display:inline-block;padding:5px 12px;border-radius:50px;background:rgba(78,205,196,.14);border:1px solid rgba(78,205,196,.3);color:#bdeee9;font-size:13px}
+.status-ctrl{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px}
+.status-ctrl button{padding:9px 18px;border-radius:50px;border:1.5px solid rgba(255,255,255,.15);background:transparent;color:var(--text-body);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:.2s}
+.status-ctrl button[data-st="New"].on{color:#10202b;background:var(--yellow);border-color:transparent}
+.status-ctrl button[data-st="In Progress"].on{color:#06231f;background:var(--teal);border-color:transparent}
+.status-ctrl button[data-st="Done"].on{color:#08210f;background:var(--green);border-color:transparent}
+
+@media (max-width:680px){
+  .stats{grid-template-columns:1fr 1fr}
+  .admin-head{flex-direction:column}
+  .m-row{flex-direction:column;gap:2px}
+  .m-label{min-width:0}
+  .oc-actions{flex-direction:column}
+  .oc-actions button{width:100%}
+}
+/* download-as-PDF: card + modal buttons and printable document */
+.oc-actions .pdf:hover{border-color:#8b97ff;color:#aeb7ff}
+.btn-pdf-mini{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 18px;border-radius:50px;border:1px solid rgba(108,123,255,.5);background:rgba(108,123,255,.14);color:#aeb7ff;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:.2s}
+.btn-pdf-mini:hover{background:rgba(108,123,255,.24);color:#fff}
+#print-doc{display:none}
+#print-doc .pd-wrap{max-width:760px;margin:0 auto;color:#14213d;font-family:'Inter',Arial,sans-serif;font-size:13px;line-height:1.55}
+#print-doc .pd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #4ECDC4;padding-bottom:12px;margin-bottom:14px}
+#print-doc .pd-brand{font-family:'Space Grotesk',Arial,sans-serif;font-weight:700;font-size:20px;color:#0F3460}
+#print-doc .pd-sub{font-size:11px;color:#667a92;margin-top:2px}
+#print-doc .pd-date{font-size:11px;color:#667a92;white-space:nowrap}
+#print-doc h1{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;color:#0F3460;margin:0 0 2px}
+#print-doc .pd-status{font-size:11px;color:#6b7a90;margin-bottom:6px}
+#print-doc h2{font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#159e5b;margin:15px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+#print-doc .pd-row{display:flex;gap:14px;padding:3px 0}
+#print-doc .pd-label{min-width:150px;flex:none;color:#6b7a90}
+#print-doc .pd-val{color:#14213d;font-weight:500}
+#print-doc .pd-foot{margin-top:22px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#8a97a8;text-align:center}
+@media print{
+  html,body{background:#fff !important}
+  body > *:not(#print-doc){display:none !important}
+  #print-doc{display:block !important}
+  @page{margin:16mm}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="admin-head">
+    <div>
+      <div class="brand"><span class="logo">🧠</span><h1>KidsBrain Admin</h1></div>
+      <div class="sub">Client Orders &amp; Questionnaires</div>
+    </div>
+    <button class="btn" id="refreshBtn">↻ Refresh Data</button>
+  </div>
+
+  <div class="note">📝 <b>Status changes</b> are saved in this browser for quick triage. To update an order permanently, edit the <b>Status</b> column in the Google Sheet.</div>
+
+  <div class="stats">
+    <div class="stat t-total"><div class="num" id="stTotal">0</div><div class="lbl">Total Orders</div></div>
+    <div class="stat t-new"><div class="num" id="stNew">0</div><div class="lbl">New</div></div>
+    <div class="stat t-prog"><div class="num" id="stProg">0</div><div class="lbl">In Progress</div></div>
+    <div class="stat t-done"><div class="num" id="stDone">0</div><div class="lbl">Completed</div></div>
+  </div>
+
+  <div class="controls">
+    <div class="search"><span class="ico">🔍</span><input type="text" id="search" placeholder="Search by child or parent name..."></div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-filter="All">All</button>
+      <button class="tab" data-filter="New">New</button>
+      <button class="tab" data-filter="In Progress">In Progress</button>
+      <button class="tab" data-filter="Done">Done</button>
+    </div>
+  </div>
+
+  <div id="orders" class="orders"></div>
+  <div id="state"></div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-head">
+      <h2 id="mTitle">Order details</h2>
+      <button class="x" id="modalClose" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===== CONFIG — paste your deployed Google Apps Script Web App URL ===== */
+  const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  const STATUS_KEY = 'kidsbrain_admin_status_v1';
+
+  // Sheet column header names (must match the spreadsheet header row)
+  const K = {
+    ts:'Timestamp', name:'Child Name', age:'Age', gender:'Gender', interests:'Interests',
+    tv:'TV Shows', yt:'YouTube Channels', content:'Content Type',
+    fp:'Brain Focus Primary', fs:'Brain Focus Secondary',
+    hopes:'Parent Hopes', struggles:'Child Struggles', screen:'Screen Time Limit',
+    avoid:'Content To Avoid', notes:'Special Notes',
+    parent:'Parent Name', email:'Email', phone:'Phone', method:'Contact Method', status:'Status'
+  };
+
+  const $ = (s,c)=>(c||document).querySelector(s);
+  const $$ = (s,c)=>Array.prototype.slice.call((c||document).querySelectorAll(s));
+
+  let ORDERS = [];               // augmented order objects
+  let byId = {};                 // id -> order
+  let overrides = {};            // id -> status (local)
+  let activeFilter = 'All';
+  let searchTerm = '';
+  let modalId = null;
+
+  try{ overrides = JSON.parse(localStorage.getItem(STATUS_KEY)||'{}'); }catch(e){ overrides={}; }
+  function saveOverrides(){ try{ localStorage.setItem(STATUS_KEY, JSON.stringify(overrides)); }catch(e){} }
+
+  function configured(){ return /^https?:\/\//.test(GOOGLE_SCRIPT_URL) && GOOGLE_SCRIPT_URL.indexOf('YOUR_GOOGLE')<0; }
+  function esc(t){ return String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function normStatus(v){
+    v=String(v||'').trim().toLowerCase();
+    if(v==='in progress'||v==='inprogress'||v==='progress'||v==='in-progress') return 'In Progress';
+    if(v==='done'||v==='complete'||v==='completed') return 'Done';
+    return 'New';
+  }
+  function effStatus(o){ return normStatus(overrides[o._id] || o[K.status] || 'New'); }
+  function statusClass(st){ return st==='Done'?'st-done':st==='In Progress'?'st-prog':'st-new'; }
+  function statusColor(st){ return st==='Done'?'var(--green)':st==='In Progress'?'var(--teal)':'var(--yellow)'; }
+  function splitList(v){ return String(v||'').split(',').map(x=>x.trim()).filter(Boolean); }
+
+  function fmtDate(s){
+    if(!s) return '—';
+    const d=new Date(s);
+    if(isNaN(d.getTime())) return String(s);
+    return d.toLocaleString('en-US',{month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+  }
+  function tsValue(s){ const d=new Date(s); return isNaN(d.getTime())?0:d.getTime(); }
+
+  /* ---------- fetch ---------- */
+  function setState(html){ $('#state').innerHTML = html; }
+  function clearState(){ $('#state').innerHTML=''; }
+
+  async function fetchOrders(){
+    if(!configured()){
+      $('#orders').innerHTML='';
+      setState('<div class="state"><div class="big">🔑</div><h3>Connect your Google Sheet</h3><p>Open <code>admin-panel.html</code> and set <code>GOOGLE_SCRIPT_URL</code> at the top of the script to your deployed Apps Script Web App URL.</p></div>');
+      renderStats();
+      return;
+    }
+    const btn=$('#refreshBtn'); btn.disabled=true; btn.textContent='↻ Loading…';
+    $('#orders').innerHTML='';
+    setState('<div class="state"><div class="spinner"></div><p>Loading orders…</p></div>');
+    try{
+      const res = await fetch(GOOGLE_SCRIPT_URL, {method:'GET'});
+      const result = await res.json();
+      if(!result || !result.success || !Array.isArray(result.data)) throw new Error('Unexpected response');
+      ORDERS = result.data.map((row,i)=>{
+        const o = Object.assign({}, row);
+        o._id = String(row[K.ts] || ('row-'+i));
+        o._t = tsValue(row[K.ts]);
+        return o;
+      });
+      byId={}; ORDERS.forEach(o=> byId[o._id]=o);
+      clearState();
+      render();
+    }catch(err){
+      console.error('Failed to fetch orders:', err);
+      $('#orders').innerHTML='';
+      setState('<div class="state"><div class="big">⚠️</div><h3>Could not load orders</h3><p>Check your connection and that the Apps Script is deployed with access set to <b>Anyone</b>. Then hit Refresh.</p></div>');
+      renderStats();
+    }finally{
+      btn.disabled=false; btn.textContent='↻ Refresh Data';
+    }
+  }
+
+  /* ---------- render ---------- */
+  function renderStats(){
+    let n=0,p=0,d=0;
+    ORDERS.forEach(o=>{ const s=effStatus(o); if(s==='New')n++; else if(s==='In Progress')p++; else d++; });
+    $('#stTotal').textContent=ORDERS.length;
+    $('#stNew').textContent=n; $('#stProg').textContent=p; $('#stDone').textContent=d;
+    // tab counts
+    setTabCount('All', ORDERS.length); setTabCount('New', n); setTabCount('In Progress', p); setTabCount('Done', d);
+  }
+  function setTabCount(filter, n){
+    const tab = $$('#tabs .tab').filter(t=>t.dataset.filter===filter)[0];
+    if(!tab) return;
+    let c = tab.querySelector('.count'); if(!c){ c=document.createElement('span'); c.className='count'; tab.appendChild(c); }
+    c.textContent='('+n+')';
+  }
+
+  function filtered(){
+    const term=searchTerm.toLowerCase();
+    return ORDERS.filter(o=>{
+      if(activeFilter!=='All' && effStatus(o)!==activeFilter) return false;
+      if(term){
+        const hay=((o[K.name]||'')+' '+(o[K.parent]||'')).toLowerCase();
+        if(hay.indexOf(term)<0) return false;
+      }
+      return true;
+    }).sort((a,b)=> b._t - a._t);
+  }
+
+  function orderCard(o){
+    const st=effStatus(o);
+    const childBits=[];
+    if(o[K.name]) childBits.push(esc(o[K.name]));
+    if(o[K.age]!=='' && o[K.age]!=null) childBits.push('age '+esc(o[K.age]));
+    const childLine = childBits.join(', ') + (o[K.gender]?(' <span class="em">('+esc(o[K.gender])+')</span>'):'');
+    const interests = splitList(o[K.interests]);
+    const focusBits=[];
+    if(o[K.fp]) focusBits.push(esc(o[K.fp])+' <span class="em">(primary)</span>');
+    if(o[K.fs]) focusBits.push(esc(o[K.fs])+' <span class="em">(secondary)</span>');
+    return ''+
+      '<div class="order-card" style="--status-c:'+statusColor(st)+'">'+
+        '<div class="oc-top">'+
+          '<span class="status-badge '+statusClass(st)+'"><span class="dot"></span>'+st+'</span>'+
+          '<span class="oc-date">Submitted: '+esc(fmtDate(o[K.ts]))+'</span>'+
+        '</div>'+
+        '<div class="oc-body">'+
+          '<div class="oc-line"><b>Child:</b> '+(childLine||'<span class="em">—</span>')+'</div>'+
+          '<div class="oc-line"><b>Interests:</b> '+(interests.length?esc(interests.join(', ')):'<span class="em">—</span>')+'</div>'+
+          '<div class="oc-line"><b>Focus:</b> '+(focusBits.length?focusBits.join(', '):'<span class="em">—</span>')+'</div>'+
+          '<div class="oc-line"><b>Parent:</b> '+(o[K.parent]?esc(o[K.parent]):'<span class="em">—</span>')+(o[K.email]?(' <span class="em">|</span> '+esc(o[K.email])):'')+'</div>'+
+        '</div>'+
+        '<div class="oc-actions" data-id="'+esc(o._id)+'">'+
+          '<button class="view" data-act="view">View Full Details</button>'+
+          '<button class="mk-prog" data-act="prog">Mark In Progress</button>'+
+          '<button class="mk-done" data-act="done">Mark Done</button>'+
+          '<button class="pdf" data-act="pdf">⬇ PDF</button>'+
+        '</div>'+
+      '</div>';
+  }
+
+  function render(){
+    renderStats();
+    const list=filtered();
+    const box=$('#orders');
+    if(ORDERS.length===0){ box.innerHTML=''; setState('<div class="state"><div class="big">📭</div><h3>No orders yet</h3><p>Submissions from the questionnaire will appear here.</p></div>'); return; }
+    if(list.length===0){ box.innerHTML=''; setState('<div class="state"><div class="big">🔍</div><h3>No matching orders</h3><p>Try a different search or filter.</p></div>'); return; }
+    clearState();
+    box.innerHTML = list.map(orderCard).join('');
+  }
+
+  /* ---------- modal ---------- */
+  function mRow(label,val){
+    const has = val!=null && String(val).trim()!=='';
+    return '<div class="m-row"><span class="m-label">'+label+'</span><span class="m-val">'+(has?esc(val):'<span class="muted">—</span>')+'</span></div>';
+  }
+  function mTags(label,arr){
+    const inner = arr.length ? '<div class="tags">'+arr.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>' : '<span class="muted">—</span>';
+    return '<div class="m-row"><span class="m-label">'+label+'</span><span class="m-val">'+inner+'</span></div>';
+  }
+  function openModal(id){
+    const o=byId[id]; if(!o) return;
+    modalId=id;
+    $('#mTitle').textContent = (o[K.name]? o[K.name]+"'s order" : 'Order details');
+    const email=o[K.email], phone=o[K.phone];
+    let h='';
+    h+='<div class="m-sec"><h4>Child Info</h4>'+mRow('Name',o[K.name])+mRow('Age',o[K.age])+mRow('Gender',o[K.gender])+'</div>';
+    h+='<div class="m-sec"><h4>Interests &amp; Media</h4>'+mTags('Interests',splitList(o[K.interests]))+mRow('TV / Cartoons',o[K.tv])+mRow('YouTube',o[K.yt])+mTags('Content types',splitList(o[K.content]))+'</div>';
+    h+='<div class="m-sec"><h4>Brain Training Focus</h4>'+mRow('Primary',o[K.fp])+mRow('Secondary',o[K.fs])+'</div>';
+    h+='<div class="m-sec"><h4>Parent Input</h4>'+mRow('Hopes',o[K.hopes])+mRow('Struggles',o[K.struggles])+mRow('Screen time / day',o[K.screen])+mTags('Avoid',splitList(o[K.avoid]))+mRow('Special notes',o[K.notes])+'</div>';
+    const emailVal = email ? '<a href="mailto:'+esc(email)+'">'+esc(email)+'</a>' : '<span class="muted">—</span>';
+    const phoneVal = phone ? '<a href="tel:'+esc(String(phone).replace(/\s+/g,''))+'">'+esc(phone)+'</a>' : '<span class="muted">—</span>';
+    h+='<div class="m-sec"><h4>Contact</h4>'+mRow('Parent',o[K.parent])+
+        '<div class="m-row"><span class="m-label">Email</span><span class="m-val">'+emailVal+'</span></div>'+
+        '<div class="m-row"><span class="m-label">Phone</span><span class="m-val">'+phoneVal+'</span></div>'+
+        mRow('Preferred method',o[K.method])+'</div>';
+    h+='<div class="m-sec"><h4>Status</h4><div class="status-ctrl" id="statusCtrl">'+
+        ['New','In Progress','Done'].map(s=>'<button data-st="'+s+'">'+s+'</button>').join('')+
+        '</div><div style="margin-top:8px;color:var(--text-muted);font-size:12.5px">Submitted: '+esc(fmtDate(o[K.ts]))+'</div>'+
+        '<button class="btn-pdf-mini" data-modal-pdf>⬇ Download PDF of this order</button></div>';
+    $('#modalBody').innerHTML=h;
+    syncStatusButtons();
+    $('#overlay').classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function syncStatusButtons(){
+    const o=byId[modalId]; if(!o) return;
+    const cur=effStatus(o);
+    $$('#statusCtrl button').forEach(b=> b.classList.toggle('on', b.dataset.st===cur));
+  }
+  function closeModal(){ $('#overlay').classList.remove('show'); document.body.style.overflow=''; modalId=null; }
+
+  function setStatus(id, st){
+    overrides[id]=st; saveOverrides();
+    render();
+    if(modalId===id) syncStatusButtons();
+  }
+
+  /* ---------- download an order as PDF (via browser print) ---------- */
+  function opRow(label, val){
+    return '<div class="pd-row"><span class="pd-label">'+label+'</span><span class="pd-val">'+(val!=null && String(val).trim()!=='' ? esc(val) : '—')+'</span></div>';
+  }
+  function buildOrderPrintDoc(o){
+    var when = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    var name = o[K.name] || 'Child';
+    var h = '<div class="pd-wrap">'
+      + '<div class="pd-head"><div><div class="pd-brand">🧠 KidsBrain</div><div class="pd-sub">Client Order — Questionnaire</div></div><div class="pd-date">'+when+'</div></div>'
+      + '<h1>'+esc(name)+"'s Game Plan</h1>"
+      + '<div class="pd-status">Status: '+esc(effStatus(o))+'  ·  Submitted: '+esc(fmtDate(o[K.ts]))+'</div>'
+      + '<h2>Child</h2>'+opRow('Name',o[K.name])+opRow('Age',o[K.age])+opRow('Gender',o[K.gender])
+      + '<h2>Interests &amp; Media</h2>'+opRow('Interests',o[K.interests])+opRow('TV / Cartoons',o[K.tv])+opRow('YouTube',o[K.yt])+opRow('Content types',o[K.content])
+      + '<h2>Brain Focus</h2>'+opRow('Primary',o[K.fp])+opRow('Secondary',o[K.fs])
+      + '<h2>Parent Input</h2>'+opRow('Hopes',o[K.hopes])+opRow('Struggles',o[K.struggles])+opRow('Screen time / day',o[K.screen])+opRow('Avoid',o[K.avoid])+opRow('Special notes',o[K.notes])
+      + '<h2>Contact</h2>'+opRow('Parent',o[K.parent])+opRow('Email',o[K.email])+opRow('Phone',o[K.phone])+opRow('Preferred method',o[K.method])
+      + '<div class="pd-foot">KidsBrain admin · generated '+when+'</div>'
+      + '</div>';
+    document.getElementById('print-doc').innerHTML = h;
+  }
+  function printOrder(id){
+    var o=byId[id]; if(!o) return;
+    buildOrderPrintDoc(o);
+    var prev=document.title;
+    document.title = 'KidsBrain - ' + ((o[K.name]||'order').replace(/[^\w -]/g,'').trim() || 'order') + ' order';
+    window.print();
+    setTimeout(function(){ document.title=prev; }, 600);
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function(e){
+    const act = e.target.closest('[data-act]');
+    if(act){
+      const id = act.parentElement.dataset.id;
+      const a = act.dataset.act;
+      if(a==='view') openModal(id);
+      else if(a==='prog') setStatus(id,'In Progress');
+      else if(a==='done') setStatus(id,'Done');
+      else if(a==='pdf') printOrder(id);
+      return;
+    }
+    const stBtn = e.target.closest('#statusCtrl button');
+    if(stBtn && modalId){ setStatus(modalId, stBtn.dataset.st); return; }
+    const mPdf = e.target.closest('[data-modal-pdf]');
+    if(mPdf && modalId){ printOrder(modalId); return; }
+  });
+  $('#tabs').addEventListener('click', function(e){
+    const t=e.target.closest('.tab'); if(!t) return;
+    activeFilter=t.dataset.filter;
+    $$('#tabs .tab').forEach(x=> x.classList.toggle('active', x===t));
+    render();
+  });
+  $('#search').addEventListener('input', function(e){ searchTerm=e.target.value; render(); });
+  $('#refreshBtn').addEventListener('click', fetchOrders);
+  $('#modalClose').addEventListener('click', closeModal);
+  $('#overlay').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+  /* ---------- init ---------- */
+  document.addEventListener('DOMContentLoaded', fetchOrders);
+  if(document.readyState!=='loading') fetchOrders();
+})();
+</script>
+<div id="print-doc"></div>
+</body>
+</html>

@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="KidsBrain — custom cognitive games built around what your child loves. Memory, attention, and fast thinking, with built-in screen time control for parents.">
+<title>KidsBrain — Custom Cognitive Games for Your Child</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KidsBrain — single-file sales site
+   ============================================================ */
+
+:root{
+  /* Backgrounds */
+  --bg-main:#1A1A2E;
+  --bg-secondary:#16213E;
+  --bg-card:#0F3460;
+  /* Accents */
+  --teal:#4ECDC4;
+  --pink:#FF6B9D;
+  --yellow:#FFE66D;
+  --orange:#FF8A5C;
+  --green:#2ECC71;
+  --red:#E74C3C;
+  /* Text */
+  --text-white:#FFFFFF;
+  --text-body:#B8C5D6;
+  --text-muted:#7B8DA3;
+  /* Layout */
+  --maxw:1200px;
+  --radius:18px;
+  --radius-sm:12px;
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:var(--bg-main);
+  color:var(--text-body);
+  line-height:1.6;
+  font-size:17px;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+h1,h2,h3,h4{
+  font-family:'Space Grotesk','Inter',sans-serif;
+  color:var(--text-white);
+  line-height:1.15;
+  font-weight:700;
+  letter-spacing:-.01em;
+}
+
+a{color:inherit;text-decoration:none}
+
+/* ---------- Layout helpers ---------- */
+.container{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+
+section{position:relative;padding:90px 0 84px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center}
+section:nth-child(even){background:var(--bg-secondary)}
+
+.section-head{text-align:center;max-width:760px;margin:0 auto 56px}
+.section-head h2{font-size:clamp(28px,4.6vw,46px);margin-bottom:16px}
+.section-head p{font-size:clamp(16px,2.2vw,20px);color:var(--text-body)}
+
+.eyebrow{
+  display:inline-block;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:14px;
+}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;
+  padding:16px 30px;border:none;border-radius:50px;cursor:pointer;
+  color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);
+  box-shadow:0 12px 30px rgba(78,205,196,.32);
+  transition:transform .25s ease,box-shadow .25s ease,filter .25s ease;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(78,205,196,.45);filter:brightness(1.05)}
+.btn:active{transform:translateY(-1px)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),#e85a8a);color:#fff;box-shadow:0 12px 30px rgba(255,107,157,.32)}
+.btn-pink:hover{box-shadow:0 18px 40px rgba(255,107,157,.45)}
+.btn-lg{font-size:19px;padding:19px 40px}
+.btn-sm{font-size:15px;padding:11px 22px}
+
+/* ---------- Sticky header ---------- */
+.site-header{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(22,33,62,.82);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  transform:translateY(-110%);transition:transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.site-header.show{transform:translateY(0)}
+.site-header .container{display:flex;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;color:#fff}
+.brand .logo{font-size:24px}
+.brand b{background:linear-gradient(135deg,var(--teal),var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ---------- Reveal animation ---------- */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal.d1{transition-delay:.08s}
+.reveal.d2{transition-delay:.16s}
+.reveal.d3{transition-delay:.24s}
+.reveal.d4{transition-delay:.32s}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+
+/* ============================================================
+   1. HERO
+   ============================================================ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  text-align:center;padding:120px 0 90px;
+  background:linear-gradient(160deg,var(--bg-main) 0%,var(--bg-secondary) 100%);
+  overflow:hidden;
+}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(78,205,196,.12),transparent 60%);pointer-events:none}
+.hero .container{position:relative;z-index:2}
+.hero-circles{position:absolute;inset:0;z-index:1;pointer-events:none}
+.circle{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;animation:float 16s ease-in-out infinite}
+.circle.c1{width:160px;height:160px;background:radial-gradient(circle,rgba(78,205,196,.55),transparent 70%);top:12%;left:8%;animation-duration:18s}
+.circle.c2{width:120px;height:120px;background:radial-gradient(circle,rgba(255,107,157,.5),transparent 70%);top:22%;right:12%;animation-duration:22s;animation-delay:-4s}
+.circle.c3{width:90px;height:90px;background:radial-gradient(circle,rgba(255,230,109,.45),transparent 70%);bottom:20%;left:16%;animation-duration:20s;animation-delay:-8s}
+.circle.c4{width:200px;height:200px;background:radial-gradient(circle,rgba(255,138,92,.32),transparent 70%);bottom:8%;right:8%;animation-duration:26s;animation-delay:-2s}
+.circle.c5{width:70px;height:70px;background:radial-gradient(circle,rgba(46,204,113,.45),transparent 70%);top:46%;left:46%;animation-duration:17s;animation-delay:-6s}
+@keyframes float{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(28px,-34px) scale(1.08)}
+  66%{transform:translate(-22px,22px) scale(.94)}
+}
+
+.hero h1{
+  font-size:clamp(56px,11vw,118px);line-height:.95;margin-bottom:18px;
+  background:linear-gradient(120deg,#fff 10%,var(--teal) 55%,var(--pink) 95%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-.03em;
+}
+.hero-sub{font-size:clamp(20px,3.4vw,30px);color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:500;margin-bottom:26px}
+.skill-tags{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:28px}
+.skill-tag{
+  display:inline-flex;align-items:center;gap:9px;padding:10px 20px;border-radius:50px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  font-weight:600;color:#fff;font-size:16px;
+}
+.skill-tag .ico{font-size:19px}
+.tagline{font-size:clamp(18px,2.6vw,23px);color:var(--text-white);font-weight:600;margin-bottom:10px}
+.tagline em{color:var(--yellow);font-style:normal}
+.subnote{display:inline-flex;align-items:center;gap:8px;color:var(--text-body);font-size:16px;margin-bottom:40px}
+.subnote .ico{color:var(--green)}
+
+/* ============================================================
+   2. PROBLEM
+   ============================================================ */
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.problem-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:34px 30px;
+  border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden;
+  transition:transform .3s ease,box-shadow .3s ease;
+  border-top:4px solid var(--accent);
+}
+.problem-card:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
+.problem-card .quote{font-size:18px;color:#fff;font-weight:500;margin-bottom:22px;line-height:1.5}
+.problem-card .quote::before{content:"\201C";font-family:Georgia,serif;font-size:60px;color:var(--accent);line-height:0;display:block;height:26px;opacity:.7}
+.problem-card .pain{display:flex;gap:10px;padding-top:20px;border-top:1px dashed rgba(255,255,255,.12);color:var(--text-body);font-size:15.5px}
+.problem-card .pain .ico{color:var(--accent);flex:none}
+.problem-bottom{
+  margin-top:46px;text-align:center;max-width:820px;margin-left:auto;margin-right:auto;
+  font-size:clamp(18px,2.6vw,24px);color:#fff;font-weight:500;line-height:1.55;
+  padding:30px;border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(78,205,196,.08));
+  border:1px solid rgba(255,255,255,.08);
+}
+.problem-bottom strong{color:var(--yellow)}
+
+/* ============================================================
+   3. SCREEN TIME CONTROL
+   ============================================================ */
+.compare-2{display:grid;grid-template-columns:1fr 1fr;gap:26px;max-width:980px;margin:0 auto}
+.compare-col{background:var(--bg-card);border-radius:var(--radius);padding:32px 28px;border:1px solid rgba(255,255,255,.06)}
+.compare-col.bad{border-top:4px solid var(--red)}
+.compare-col.good{border-top:4px solid var(--green)}
+.compare-col h3{font-size:22px;margin-bottom:22px;display:flex;align-items:center;gap:10px}
+.compare-col.bad h3{color:var(--red)}
+.compare-col.good h3{color:var(--green)}
+.compare-col ul{list-style:none;display:flex;flex-direction:column;gap:15px}
+.compare-col li{display:flex;gap:12px;align-items:flex-start;font-size:16px}
+.compare-col li .ico{flex:none;font-weight:700;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;margin-top:2px}
+.compare-col.bad li .ico{background:rgba(231,76,60,.16);color:var(--red)}
+.compare-col.good li .ico{background:rgba(46,204,113,.16);color:var(--green)}
+.compare-col.good li{color:var(--text-white)}
+.highlight-box{
+  margin:46px auto 0;max-width:880px;text-align:center;padding:32px 34px;border-radius:var(--radius);
+  background:linear-gradient(135deg,rgba(46,204,113,.12),rgba(78,205,196,.08));
+  border:1px solid rgba(46,204,113,.25);font-size:clamp(17px,2.4vw,22px);color:#fff;font-weight:500;line-height:1.55;
+}
+.highlight-box strong{color:var(--green)}
+
+/* ============================================================
+   4. SOLUTION — game types
+   ============================================================ */
+.game-card{
+  background:var(--bg-card);border-radius:var(--radius);padding:34px 30px;
+  border:1px solid rgba(255,255,255,.06);text-align:left;position:relative;overflow:hidden;
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.game-card::before{content:"";position:absolute;top:0;left:0;right:0;height:140px;background:radial-gradient(circle at 20% 0%,var(--glow),transparent 60%);opacity:.5;pointer-events:none}
+.game-card:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
+.game-card .gico{font-size:44px;margin-bottom:18px;display:block}
+.game-card .gkind{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.game-card h3{font-size:24px;margin-bottom:12px}
+.game-card p{font-size:16px;margin-bottom:20px}
+.game-card .benefit{display:inline-flex;gap:9px;align-items:center;padding:9px 16px;border-radius:50px;background:rgba(255,255,255,.05);font-size:14.5px;color:#fff;font-weight:500;border:1px solid rgba(255,255,255,.09)}
+.game-card .benefit .ico{color:var(--accent)}
+.note-row{margin-top:42px;text-align:center;color:var(--text-muted);font-size:15.5px;display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:center}
+.note-row span{display:inline-flex;align-items:center;gap:8px}
+.note-row .ico{color:var(--teal)}
+
+/* ============================================================
+   5. ANY INTEREST
+   ============================================================ */
+.interest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.interest-card{
+  background:var(--bg-card);border-radius:var(--radius-sm);padding:26px 22px;
+  border:1px solid rgba(255,255,255,.06);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+}
+.interest-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:var(--dot)}
+.interest-card .top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.interest-card .emoji{font-size:30px}
+.interest-card .dot{width:11px;height:11px;border-radius:50%;background:var(--dot);box-shadow:0 0 12px var(--dot);flex:none}
+.interest-card h4{font-size:19px;margin-left:auto}
+.interest-card .name{font-size:19px}
+.interest-card p{font-size:14.5px;color:var(--text-body)}
+.interest-bottom{margin-top:42px;text-align:center;font-size:clamp(17px,2.4vw,22px);color:#fff;font-weight:500;max-width:760px;margin-left:auto;margin-right:auto}
+.interest-bottom span{color:var(--teal);font-weight:600}
+
+/* ============================================================
+   6. GAME PREVIEW
+   ============================================================ */
+.game-videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1000px;margin:2rem auto 0}
+.game-video-card{
+  background:rgba(15,52,96,.5);border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:1.25rem;text-align:center;
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.game-video-card:hover{transform:translateY(-4px);box-shadow:0 8px 32px rgba(78,205,196,.15)}
+.game-video-badge{
+  display:inline-block;background:var(--badge-color);color:#fff;
+  font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
+  padding:4px 14px;border-radius:12px;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;
+}
+.game-video-title{color:#fff;font-size:1.2rem;margin:.5rem 0}
+/* Video container — VERTICAL 9:16 ratio for YouTube Shorts */
+.game-video-container{
+  position:relative;width:100%;max-width:240px;margin:.75rem auto;
+  border-radius:12px;overflow:hidden;background:#0a0a1a;aspect-ratio:9/16;
+}
+.game-video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px}
+.game-video-desc{color:var(--text-body);font-size:.85rem;margin-top:.75rem;line-height:1.4}
+@media (max-width:768px){
+  .game-videos-grid{grid-template-columns:1fr;max-width:320px}
+  .game-video-container{max-width:200px}
+}
+@media (min-width:769px) and (max-width:1024px){
+  .game-videos-grid{grid-template-columns:repeat(2,1fr);max-width:600px}
+}
+.preview-note{margin-top:42px;text-align:center;color:var(--text-body);font-size:16px}
+.preview-note strong{color:var(--yellow)}
+
+/* ============================================================
+   6.5 REAL RESULTS — "See It In Action"
+   ============================================================ */
+.results-showcase{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:1100px;margin:2.5rem auto 0}
+/* photo */
+.results-photo-wrapper{text-align:center}
+.results-photo{width:100%;max-width:380px;border-radius:20px;box-shadow:0 12px 40px rgba(78,205,196,.15);border:3px solid rgba(78,205,196,.2);transition:transform .3s ease;display:block;margin:0 auto}
+.results-photo:hover{transform:scale(1.02)}
+.results-photo-caption{color:var(--text-muted);font-size:.85rem;margin-top:.75rem;font-style:italic}
+/* graceful placeholder shown only if the photo file isn't present yet */
+.results-photo-ph{display:none}
+.results-photo-wrapper.no-photo .results-photo-ph{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  width:100%;max-width:380px;aspect-ratio:3/4;margin:0 auto;border-radius:20px;
+  background:linear-gradient(160deg,#13294d,#0d2240);border:3px dashed rgba(78,205,196,.3);
+}
+.results-photo-ph .ph-emoji{font-size:44px}
+.results-photo-ph span:last-child{font-size:14px;font-weight:600;color:var(--text-body)}
+/* content */
+.results-content{display:flex;flex-direction:column;gap:1.5rem}
+.results-quote{background:rgba(15,52,96,.5);border-radius:16px;padding:1.5rem;position:relative;border-left:4px solid var(--teal)}
+.results-quote-icon{font-size:3rem;color:var(--teal);opacity:.4;line-height:1;position:absolute;top:8px;left:12px;font-family:Georgia,serif}
+.results-quote p{color:var(--text-body);font-size:1.05rem;line-height:1.6;font-style:italic;margin:0;padding-left:1.5rem}
+.results-quote-author{display:block;color:var(--teal);font-size:.9rem;font-weight:600;margin-top:.75rem;padding-left:1.5rem}
+/* video */
+.results-video-wrapper{text-align:center}
+.results-video-label{color:var(--text-body);font-size:.9rem;margin-bottom:.5rem}
+.results-video-container{position:relative;width:100%;max-width:280px;margin:0 auto;border-radius:14px;overflow:hidden;background:#0a0a1a;aspect-ratio:9/16;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.results-video-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+/* highlights */
+.results-highlights{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.results-highlight-item{background:rgba(15,52,96,.4);border-radius:10px;padding:.75rem 1rem;display:flex;align-items:center;gap:.5rem;color:var(--text-body);font-size:.85rem;transition:background .3s ease}
+.results-highlight-item:hover{background:rgba(15,52,96,.7)}
+.results-highlight-emoji{font-size:1.2rem}
+@media (max-width:768px){
+  .results-showcase{grid-template-columns:1fr;gap:2rem;text-align:center}
+  .results-photo{max-width:300px}
+  .results-photo-wrapper.no-photo .results-photo-ph{max-width:300px}
+  .results-video-container{max-width:220px}
+  .results-highlights{grid-template-columns:1fr}
+  .results-quote{text-align:left}
+}
+
+/* ============================================================
+   7. HOW IT WORKS
+   ============================================================ */
+.steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:14px}
+.step{
+  background:var(--bg-card);border-radius:var(--radius);padding:34px 26px;text-align:center;
+  border:1px solid rgba(255,255,255,.06);border-top:4px solid var(--accent);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.step:hover{transform:translateY(-8px);box-shadow:var(--shadow)}
+.step .num{width:62px;height:62px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;color:#10202b;
+  background:linear-gradient(135deg,var(--accent),#fff);box-shadow:0 0 28px var(--accent)}
+.step h3{font-size:21px;margin-bottom:10px}
+.step p{font-size:15.5px;margin-bottom:18px}
+.step .tag{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;border-radius:50px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:13.5px;color:#fff;font-weight:600}
+.step-arrow{display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:30px;opacity:.7}
+.howit-bottom{margin-top:46px}
+
+/* ============================================================
+   8. DASHBOARD
+   ============================================================ */
+.dash{display:grid;grid-template-columns:1.7fr 1fr;gap:26px;max-width:1040px;margin:0 auto;align-items:stretch}
+.dash-panel{background:linear-gradient(160deg,#13294d,#0d2240);border-radius:var(--radius);padding:32px 30px;border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow)}
+.dash-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:12px}
+.dash-head h3{font-size:22px}
+.badge-active{display:inline-flex;align-items:center;gap:8px;padding:7px 15px;border-radius:50px;background:rgba(46,204,113,.16);color:var(--green);font-weight:600;font-size:13.5px}
+.badge-active .pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:pulse 1.8s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.55)}70%{box-shadow:0 0 0 10px rgba(46,204,113,0)}100%{box-shadow:0 0 0 0 rgba(46,204,113,0)}}
+.metric{margin-bottom:24px}
+.metric:last-child{margin-bottom:0}
+.metric .m-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.metric .m-name{font-weight:600;color:#fff;font-size:16px}
+.metric .m-gain{font-size:14px;font-weight:600;color:var(--accent)}
+.bar{height:14px;border-radius:50px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar-fill{height:100%;border-radius:50px;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width 1.6s cubic-bezier(.2,.8,.2,1);position:relative}
+.bar-fill::after{content:attr(data-pct);position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10.5px;font-weight:700;color:#10202b;opacity:0;transition:opacity .6s ease .8s}
+.dash.animate .bar-fill::after{opacity:1}
+.dash-stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:start}
+.stat{background:var(--bg-card);border-radius:var(--radius-sm);padding:22px 18px;text-align:center;border:1px solid rgba(255,255,255,.06)}
+.stat .big{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;color:#fff;line-height:1}
+.stat .big.tealc{color:var(--teal)}
+.stat .lbl{font-size:13px;color:var(--text-muted);margin-top:7px}
+.dash-bottom{margin-top:42px;text-align:center;font-size:clamp(17px,2.4vw,21px);color:#fff;font-weight:500}
+
+/* ============================================================
+   9. COMPARISON TABLE
+   ============================================================ */
+.ctable{max-width:920px;margin:0 auto;border-radius:var(--radius);overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.crow{display:grid;grid-template-columns:1.1fr 1fr 1fr;align-items:center}
+.crow>div{padding:18px 22px}
+.crow.head>div{background:var(--bg-card);font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:17px}
+.crow.head .c-gen{color:var(--text-muted)}
+.crow.head .c-kb{color:var(--teal)}
+.crow:not(.head){border-top:1px solid rgba(255,255,255,.07)}
+.crow:nth-child(odd):not(.head){background:rgba(255,255,255,.015)}
+.c-feat{font-weight:600;color:#fff;font-size:15.5px}
+.c-gen{color:var(--text-muted);font-size:15px}
+.c-kb{color:var(--green);font-weight:600;font-size:15.5px}
+.c-kb .ico,.c-gen .ico{margin-right:8px}
+.c-kb .ico{color:var(--green)}
+.c-gen .ico{color:var(--text-muted)}
+.crow .m-only{display:none}
+
+/* ============================================================
+   10. PRICING
+   ============================================================ */
+.pricing-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:30px;max-width:980px;margin:0 auto;align-items:center}
+.price-card{
+  background:linear-gradient(160deg,#13294d,#0d2240);border-radius:24px;padding:42px 38px;
+  border:1px solid rgba(78,205,196,.3);box-shadow:0 24px 60px rgba(0,0,0,.5);position:relative;overflow:hidden;
+}
+.price-card::before{content:"";position:absolute;top:-40%;right:-20%;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(78,205,196,.22),transparent 70%)}
+.price-card .pc-name{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--teal);letter-spacing:.04em;font-size:18px;margin-bottom:8px;position:relative}
+.price-card .pc-amount{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:80px;color:#fff;line-height:1;position:relative}
+.price-card .pc-sub{color:var(--text-muted);font-size:15px;margin:8px 0 26px;position:relative}
+.price-list{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:30px;position:relative}
+.price-list li{display:flex;gap:12px;align-items:center;color:var(--text-white);font-size:16px}
+.price-list .ico{width:24px;height:24px;border-radius:50%;background:rgba(46,204,113,.16);color:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+.price-card .btn{width:100%;position:relative}
+.price-side{display:flex;flex-direction:column;gap:16px}
+.cost-card{background:var(--bg-card);border-radius:var(--radius-sm);padding:22px 24px;border:1px solid rgba(255,255,255,.06)}
+.cost-card .label{font-size:15px;color:var(--text-body);margin-bottom:6px}
+.cost-card .amt{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:26px;color:var(--text-muted)}
+.cost-card.win{border:1px solid rgba(46,204,113,.35);background:linear-gradient(135deg,rgba(46,204,113,.12),rgba(78,205,196,.06))}
+.cost-card.win .label{color:#fff;font-weight:600}
+.cost-card.win .amt{color:var(--green)}
+
+/* ============================================================
+   11. CTA / FOOTER
+   ============================================================ */
+.cta-final{
+  text-align:center;
+  background:linear-gradient(160deg,var(--bg-secondary),var(--bg-main));
+  position:relative;overflow:hidden;
+}
+.cta-final::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(255,107,157,.12),transparent 55%)}
+.cta-final .container{position:relative;z-index:2}
+.cta-final h2{font-size:clamp(30px,5vw,54px);margin-bottom:18px;max-width:860px;margin-left:auto;margin-right:auto}
+.cta-final h2 em{font-style:normal;color:var(--yellow)}
+.cta-final .lead{font-size:clamp(18px,2.6vw,23px);color:var(--text-body);margin-bottom:34px}
+.process-reminder{display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;margin:34px auto 0;color:var(--text-body);font-size:15.5px}
+.process-reminder span{display:inline-flex;align-items:center;gap:8px}
+.process-reminder .arr{color:var(--teal)}
+.badges{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:34px}
+.badges .tb{display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:50px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);font-weight:600;color:#fff;font-size:14.5px}
+.badges .tb .ico{color:var(--green)}
+.cta-final .footnote{margin-top:38px;color:var(--text-muted);font-size:16px;font-style:italic}
+.site-foot{padding:34px 0;text-align:center;color:var(--text-muted);font-size:14px;border-top:1px solid rgba(255,255,255,.06);background:var(--bg-main)}
+.site-foot .brand{justify-content:center;font-size:18px;margin-bottom:10px}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:980px){
+  .cards-3{grid-template-columns:1fr}
+  .interest-grid{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr;gap:18px}
+  .step-arrow{transform:rotate(90deg);font-size:26px;padding:4px 0}
+  .dash{grid-template-columns:1fr}
+  .pricing-wrap{grid-template-columns:1fr}
+  .price-side{flex-direction:row;flex-wrap:wrap}
+  .cost-card{flex:1;min-width:200px}
+}
+@media (max-width:760px){
+  section{padding:74px 0 72px}
+  .container{padding:0 18px}
+  .compare-2{grid-template-columns:1fr}
+  .hero{padding:110px 0 70px}
+  .skill-tag{font-size:15px;padding:9px 16px}
+  .price-card{padding:34px 26px}
+  .price-card .pc-amount{font-size:64px}
+  /* comparison -> cards */
+  .ctable{border:none;display:flex;flex-direction:column;gap:16px;overflow:visible}
+  .crow.head{display:none}
+  .crow{grid-template-columns:1fr;background:var(--bg-card)!important;border-radius:var(--radius);border:1px solid rgba(255,255,255,.07)}
+  .crow>div{padding:14px 20px}
+  .c-feat{border-bottom:1px solid rgba(255,255,255,.08);font-size:17px}
+  .crow .m-only{display:inline;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-right:8px;opacity:.7}
+  .c-gen .m-only{color:var(--text-muted)}
+  .c-kb .m-only{color:var(--teal)}
+}
+@media (max-width:440px){
+  .interest-grid{grid-template-columns:1fr}
+  .price-side{flex-direction:column}
+  body{font-size:16px}
+}
+/* ============================================================
+   PRESENTATION MODE — slide navigation
+   ============================================================ */
+.slide-arrow{
+  position:fixed;top:50%;transform:translateY(-50%);z-index:1000;
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(78,205,196,.15);border:2px solid rgba(78,205,196,.3);color:var(--teal);
+  font-size:26px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .3s ease,border-color .3s ease,transform .3s ease,box-shadow .3s ease,opacity .3s ease;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-family:'Space Grotesk',sans-serif;
+}
+.slide-arrow:hover{background:rgba(78,205,196,.3);border-color:var(--teal);transform:translateY(-50%) scale(1.1);box-shadow:0 0 20px rgba(78,205,196,.3)}
+.slide-arrow-prev{left:20px}
+.slide-arrow-next{right:20px}
+.slide-arrow.hidden{opacity:0;pointer-events:none}
+.slide-dots{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:1000;
+  display:flex;gap:10px;padding:10px 18px;max-width:78vw;flex-wrap:wrap;justify-content:center;
+  background:rgba(26,26,46,.82);border-radius:24px;border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.slide-dot{width:10px;height:10px;border-radius:50%;background:var(--text-muted);cursor:pointer;border:none;padding:0;transition:all .3s ease}
+.slide-dot.active{background:var(--teal);width:12px;height:12px;box-shadow:0 0 8px rgba(78,205,196,.5)}
+.slide-dot:hover{background:var(--teal);opacity:.7}
+.slide-counter{position:fixed;bottom:24px;right:28px;z-index:1000;color:var(--text-muted);font-size:13px;font-family:'Inter',sans-serif;background:rgba(26,26,46,.7);padding:5px 12px;border-radius:50px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@media (max-width:768px){
+  .slide-arrow{width:40px;height:40px;font-size:21px}
+  .slide-arrow-prev{left:10px}
+  .slide-arrow-next{right:10px}
+  .slide-dots{bottom:14px;gap:7px;padding:8px 12px;max-width:70vw}
+  .slide-dot{width:8px;height:8px}
+  .slide-dot.active{width:10px;height:10px}
+  .slide-counter{bottom:14px;right:12px;font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){ .slide-arrow{transition:opacity .3s ease} }
+/* ============================================================
+   OFFER UPGRADE — urgency pricing, guarantee, value stack, age worry
+   ============================================================ */
+.hero-pill{display:inline-flex;align-items:center;gap:8px;margin:2px auto 22px;padding:8px 18px;border-radius:50px;background:rgba(78,205,196,.1);border:1px solid rgba(78,205,196,.3);color:var(--teal);font-weight:600;font-size:15px}
+.was{text-decoration:line-through;color:var(--text-muted);font-family:'Space Grotesk',sans-serif}
+.now{color:var(--green);font-weight:700;font-family:'Space Grotesk',sans-serif}
+/* pricing card */
+.price-card{text-align:center}
+.price-urgency{display:inline-block;margin:0 0 16px;padding:8px 16px;border-radius:50px;background:rgba(255,138,92,.12);border:1px solid rgba(255,138,92,.35);color:var(--orange);font-weight:600;font-size:13.5px;line-height:1.4}
+.value-stack{text-align:left;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:16px 18px;margin:0 0 22px}
+.vs-head{font-family:'Space Grotesk',sans-serif;font-weight:600;color:#fff;font-size:14.5px;margin-bottom:10px}
+.vs-row{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13.5px;color:var(--text-body)}
+.vs-row span{flex:1}
+.vs-row b{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:600;white-space:nowrap}
+.vs-row.vs-total{margin-top:4px;padding-top:11px;border-top:1px solid rgba(255,255,255,.18);border-bottom:none}
+.vs-row.vs-total span{color:#fff;font-weight:700}
+.vs-row.vs-total b{color:var(--yellow);font-size:18px}
+.pc-price{display:flex;align-items:baseline;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.pc-price .was{font-size:30px}
+.pc-price .now{font-size:72px;line-height:1}
+.save-tag{align-self:center;background:rgba(46,204,113,.15);border:1px solid rgba(46,204,113,.4);color:var(--green);font-weight:600;font-size:13px;padding:6px 12px;border-radius:50px;white-space:nowrap}
+.countdown-pill{display:inline-flex;align-items:center;gap:8px;margin:0 0 22px;padding:9px 18px;border-radius:50px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#ffb3aa;font-weight:600;font-size:14px}
+.countdown-pill [data-countdown]{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.cost-card.win .amt{display:flex;align-items:baseline;gap:8px}
+.cost-card.win .was{font-size:20px}
+.cost-card.win .now{font-size:28px}
+.cost-card .cc-note{font-size:13px;color:var(--text-muted);margin-top:4px}
+/* guarantee band */
+.guarantee-band{max-width:820px;margin:0 auto;text-align:center;background:linear-gradient(160deg,rgba(46,204,113,.1),rgba(78,205,196,.05));border:1px solid rgba(46,204,113,.35);border-radius:24px;padding:46px 38px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.guar-shield{font-size:62px;line-height:1;margin-bottom:6px;filter:drop-shadow(0 0 18px rgba(46,204,113,.4))}
+.guarantee-band h2{font-size:clamp(26px,4.4vw,42px);margin:6px 0 18px}
+.guar-body{font-size:clamp(16px,2.2vw,19px);color:var(--text-body);line-height:1.65;max-width:680px;margin:0 auto 24px}
+.guar-body strong{color:#fff}
+.guar-seal{display:inline-block;background:linear-gradient(135deg,var(--green),#27a85f);color:#06210f;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(14px,2vw,17px);padding:13px 24px;border-radius:50px;box-shadow:0 12px 30px rgba(46,204,113,.35);margin-bottom:22px}
+.guar-kicker{font-size:clamp(16px,2.2vw,19px);color:#fff;line-height:1.6;max-width:680px;margin:0 auto}
+.guar-kicker strong{color:var(--green)}
+.cost-wait{margin:30px auto 0;max-width:680px;padding:20px 24px;border-radius:16px;background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.25);text-align:left}
+.cw-head{font-family:'Space Grotesk',sans-serif;font-weight:600;color:var(--orange);font-size:13px;letter-spacing:.08em;margin-bottom:8px;text-transform:uppercase}
+.cost-wait p{color:var(--text-body);font-size:15px;line-height:1.6;margin:0}
+.cost-wait strong{color:#fff}
+/* age-worry */
+.age-body{max-width:760px;margin:0 auto 34px}
+.age-body p{font-size:clamp(16px,2.2vw,18px);color:var(--text-body);line-height:1.7;margin-bottom:18px}
+.age-body p:last-child{margin-bottom:0}
+.age-body strong{color:#fff}
+.age-body em{color:var(--yellow);font-style:normal}
+.age-cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:820px;margin:0 auto 26px}
+.age-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.07);border-radius:var(--radius);padding:26px 24px;transition:transform .3s ease,box-shadow .3s ease}
+.age-card:hover{transform:translateY(-6px);box-shadow:var(--shadow)}
+.age-card-head{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:18px;margin-bottom:12px}
+.age-card-body{color:var(--teal);font-size:16px;font-weight:500;margin-bottom:16px}
+.age-card-foot{color:var(--text-muted);font-size:13.5px;font-style:italic;padding-top:13px;border-top:1px dashed rgba(255,255,255,.12)}
+.age-caption{text-align:center;color:#fff;font-weight:600;font-size:clamp(16px,2.4vw,20px);max-width:640px;margin:0 auto 20px}
+.age-close{text-align:center;color:var(--text-body);font-size:clamp(16px,2.2vw,19px);line-height:1.6;max-width:720px;margin:0 auto;font-weight:600}
+/* two-path close + cta countdown */
+.two-path{max-width:620px;margin:6px auto 22px;text-align:left;background:rgba(15,52,96,.5);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:24px 26px}
+.tp-head{font-family:'Space Grotesk',sans-serif;font-weight:700;color:#fff;font-size:18px;margin-bottom:14px;text-align:center}
+.tp-opt{display:flex;gap:12px;align-items:flex-start;padding:12px 0;font-size:15.5px;line-height:1.5}
+.tp-opt+.tp-opt{border-top:1px solid rgba(255,255,255,.08)}
+.tp-num{font-size:20px;flex:none;line-height:1.4}
+.tp-bad{color:var(--text-muted)}
+.tp-good{color:var(--text-white)}
+.tp-good strong{color:var(--green)}
+.tp-bad strong{color:#ff9a8f}
+.tp-foot{text-align:center;color:var(--yellow);font-weight:600;font-size:15px;margin-top:12px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+.cta-countdown{display:inline-flex;align-items:center;gap:8px;margin:0 auto 18px;padding:9px 18px;border-radius:50px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#ffb3aa;font-weight:600;font-size:14px}
+.cta-countdown [data-countdown]{color:#fff;font-family:'Space Grotesk',sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .age-cards{grid-template-columns:1fr;gap:16px}
+  .pc-price .now{font-size:58px}
+  .pc-price .was{font-size:26px}
+  .two-path{padding:20px 18px}
+  .guarantee-band{padding:34px 22px}
+  .vs-row{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY HEADER ===== -->
+<header class="site-header" id="siteHeader">
+  <div class="container">
+    <a href="#hero" class="brand"><span class="logo">🧠</span><span>Kids<b>Brain</b></span></a>
+    <a href="https://ryansgames.kids/questionnaire" class="btn btn-sm">Get Started →</a>
+  </div>
+</header>
+
+<!-- ===== 1. HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-circles" aria-hidden="true">
+    <div class="circle c1"></div><div class="circle c2"></div><div class="circle c3"></div>
+    <div class="circle c4"></div><div class="circle c5"></div>
+  </div>
+  <div class="container">
+    <h1 class="reveal">KidsBrain</h1>
+    <p class="hero-sub reveal d1">Custom Cognitive Games for Your Child</p>
+    <div class="skill-tags reveal d1">
+      <span class="skill-tag"><span class="ico">🧠</span>Memory</span>
+      <span class="skill-tag"><span class="ico">🎯</span>Attention</span>
+      <span class="skill-tag"><span class="ico">⚡</span>Fast Thinking</span>
+    </div>
+    <div class="hero-pill reveal d1">👦👧 Custom-built for ages 3–9</div>
+    <p class="tagline reveal d2">Every game built around what <em>YOUR</em> child loves</p>
+    <p class="subnote reveal d2"><span class="ico">🛡️</span>With built-in screen time control for parents</p>
+    <div class="reveal d3"><a href="https://ryansgames.kids/questionnaire" class="btn btn-lg">Get Started →</a></div>
+  </div>
+</section>
+
+<!-- ===== 2. PROBLEM ===== -->
+<section id="problem">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">The Problem</span>
+      <h2>You've Tried Everything. Nothing Sticks.</h2>
+    </div>
+    <div class="cards-3">
+      <div class="problem-card reveal d1" style="--accent:var(--pink)">
+        <p class="quote">I downloaded 5 educational apps this year. My son played each one for 3 days, then never touched them again.</p>
+        <div class="pain"><span class="ico">↳</span><span>You start to wonder: is it the apps, or is it my child?</span></div>
+      </div>
+      <div class="problem-card reveal d2" style="--accent:var(--orange)">
+        <p class="quote">I feel guilty every time she picks up the iPad. But I can't take it away — she just fights me harder.</p>
+        <div class="pain"><span class="ico">↳</span><span>The daily screen time battle leaves you exhausted.</span></div>
+      </div>
+      <div class="problem-card reveal d3" style="--accent:var(--teal)">
+        <p class="quote">Every app claims to be 'personalized' but it's the same generic content for millions of kids.</p>
+        <div class="pain"><span class="ico">↳</span><span>You know your child is unique. Why doesn't anyone else?</span></div>
+      </div>
+    </div>
+    <p class="problem-bottom reveal">It's not your fault. The apps weren't built for YOUR child. They were built for everyone. <strong>And that's why they fail.</strong></p>
+  </div>
+</section>
+
+<!-- ===== 3. SCREEN TIME CONTROL ===== -->
+<section id="screentime">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Screen Time Control</span>
+      <h2>Won't This Add MORE Screen Time?</h2>
+      <p>We hear you. That's why screen time control is built into the core.</p>
+    </div>
+    <div class="compare-2">
+      <div class="compare-col bad reveal d1">
+        <h3><span>📵</span>Without KidsBrain</h3>
+        <ul>
+          <li><span class="ico">✕</span>Child spends 2+ hours on YouTube / Roblox</li>
+          <li><span class="ico">✕</span>Zero cognitive benefit from screen time</li>
+          <li><span class="ico">✕</span>You feel guilty but can't stop it</li>
+          <li><span class="ico">✕</span>No way to track what they're doing</li>
+          <li><span class="ico">✕</span>Screen time = wasted time</li>
+        </ul>
+      </div>
+      <div class="compare-col good reveal d2">
+        <h3><span>✅</span>With KidsBrain</h3>
+        <ul>
+          <li><span class="ico">✓</span>15–20 minutes of focused brain training</li>
+          <li><span class="ico">✓</span>Every minute builds memory &amp; attention</li>
+          <li><span class="ico">✓</span>You see exactly what they practiced</li>
+          <li><span class="ico">✓</span>Built-in session limits (parent-controlled)</li>
+          <li><span class="ico">✓</span>Screen time = brain growth time</li>
+        </ul>
+      </div>
+    </div>
+    <p class="highlight-box reveal">KidsBrain doesn't add screen time. It <strong>REPLACES</strong> wasted time. Instead of 2 hours of YouTube, your child does 20 focused minutes of brain training.</p>
+  </div>
+</section>
+
+<!-- ===== 4. SOLUTION — 3 GAME TYPES ===== -->
+<section id="games">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">The Solution</span>
+      <h2>3 Games. 3 Skills. Built for ONE Child.</h2>
+      <p>Every game trains a different cognitive skill — disguised as pure fun.</p>
+    </div>
+    <div class="cards-3">
+      <div class="game-card reveal d1" style="--accent:var(--pink);--glow:rgba(255,107,157,.25)">
+        <span class="gico">🧩</span>
+        <div class="gkind">Memory</div>
+        <h3>Memory Match</h3>
+        <p>Find matching pairs using characters from your child's world.</p>
+        <span class="benefit"><span class="ico">✦</span>Strengthens recall &amp; working memory</span>
+      </div>
+      <div class="game-card reveal d2" style="--accent:var(--teal);--glow:rgba(78,205,196,.25)">
+        <span class="gico">🔍</span>
+        <div class="gkind">Attention</div>
+        <h3>Focus Finder</h3>
+        <p>Spot differences and filter distractions in themed scenes.</p>
+        <span class="benefit"><span class="ico">✦</span>Builds concentration &amp; visual attention</span>
+      </div>
+      <div class="game-card reveal d3" style="--accent:var(--yellow);--glow:rgba(255,230,109,.22)">
+        <span class="gico">⚡</span>
+        <div class="gkind">Speed</div>
+        <h3>Speed Dash</h3>
+        <p>Quick-fire challenges where fast thinking wins the game.</p>
+        <span class="benefit"><span class="ico">✦</span>Sharpens processing speed &amp; reactions</span>
+      </div>
+    </div>
+    <div class="note-row reveal">
+      <span><span class="ico">◆</span>Multiple difficulty levels</span>
+      <span><span class="ico">◆</span>Unlimited replays</span>
+      <span><span class="ico">◆</span>Progress saved automatically</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5. ANY INTEREST WORKS ===== -->
+<section id="interests">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Any Interest Works</span>
+      <h2>Whatever They Love — We Build Games Around It</h2>
+      <p>No interest is too big or too small. If your child is excited about it, we use it.</p>
+    </div>
+    <div class="interest-grid">
+      <div class="interest-card reveal d1" style="--dot:var(--green)">
+        <div class="top"><span class="emoji">🦕</span><span class="dot"></span><span class="name"><strong>Dinosaurs</strong></span></div>
+        <p>T-Rex pairs, fossil hunts, volcano speed quiz</p>
+      </div>
+      <div class="interest-card reveal d1" style="--dot:var(--teal)">
+        <div class="top"><span class="emoji">⛏️</span><span class="dot"></span><span class="name"><strong>Minecraft</strong></span></div>
+        <p>Block matching, crafting puzzles, creeper dash</p>
+      </div>
+      <div class="interest-card reveal d2" style="--dot:var(--red)">
+        <div class="top"><span class="emoji">🎮</span><span class="dot"></span><span class="name"><strong>Roblox</strong></span></div>
+        <p>Avatar pairs, obby logic, speed challenges</p>
+      </div>
+      <div class="interest-card reveal d2" style="--dot:var(--pink)">
+        <div class="top"><span class="emoji">🕷️</span><span class="dot"></span><span class="name"><strong>Spider-Man</strong></span></div>
+        <p>Web-match cards, villain spotter, hero speed tap</p>
+      </div>
+      <div class="interest-card reveal d3" style="--dot:var(--yellow)">
+        <div class="top"><span class="emoji">⚽</span><span class="dot"></span><span class="name"><strong>Football</strong></span></div>
+        <p>Player pairs, play-call puzzles, kick-speed game</p>
+      </div>
+      <div class="interest-card reveal d3" style="--dot:var(--orange)">
+        <div class="top"><span class="emoji">🏀</span><span class="dot"></span><span class="name"><strong>Basketball</strong></span></div>
+        <p>Jersey matching, court puzzle, free-throw speed</p>
+      </div>
+      <div class="interest-card reveal d4" style="--dot:var(--teal)">
+        <div class="top"><span class="emoji">🚀</span><span class="dot"></span><span class="name"><strong>Space</strong></span></div>
+        <p>Planet pairs, star maps, rocket speed challenge</p>
+      </div>
+      <div class="interest-card reveal d4" style="--dot:var(--yellow)">
+        <div class="top"><span class="emoji">🧽</span><span class="dot"></span><span class="name"><strong>SpongeBob</strong></span></div>
+        <p>Bikini Bottom match, jellyfish focus, Krabby quiz</p>
+      </div>
+    </div>
+    <p class="interest-bottom reveal">Unicorns? Cars? Cooking? Animals? Lego? Pokemon? <span>Tell us what they love. We do the rest.</span></p>
+  </div>
+</section>
+
+<!-- ===== 5.5 AGE WORRY ===== -->
+<section id="age-worry">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--orange)">Age Worry</span>
+      <h2>"Won't This Be Boring for My Older Kid?"</h2>
+      <p>Most parents get this backwards. Fun doesn't come from age — it comes from interest.</p>
+    </div>
+    <div class="age-body reveal">
+      <p>A 3-year-old and a 9-year-old don't want the same things. A toddler might light up at farm animals — your nine-year-old would roll their eyes. But a nine-year-old obsessed with Roblox? That toddler wouldn't have the faintest idea what's going on.</p>
+      <p>That's exactly why these games work across the whole age range. We don't build "a kids' game." We build <strong>your child's</strong> game — themed around the one thing <em>they</em> can't stop talking about. A Roblox-mad 9-year-old gets a Roblox world. A dinosaur-crazy 5-year-old gets dinosaurs. The fun is locked to the interest, not the birthday.</p>
+      <p>And it never feels too easy, either. Every game has multiple difficulty levels — so an older child gets a real challenge, not baby stuff. The theme matches what they love; the difficulty matches what they can handle.</p>
+    </div>
+    <div class="age-cards reveal">
+      <div class="age-card">
+        <div class="age-card-head">Age 5 · loves dinosaurs 🦕</div>
+        <div class="age-card-body">Dino memory match · fossil hunt · volcano speed quiz</div>
+        <div class="age-card-foot">A 9-year-old would find it too young.</div>
+      </div>
+      <div class="age-card">
+        <div class="age-card-head">Age 9 · loves Roblox 🎮</div>
+        <div class="age-card-body">Avatar pairs · obby logic · speed challenges</div>
+        <div class="age-card-foot">A 5-year-old wouldn't even get it.</div>
+      </div>
+    </div>
+    <p class="age-caption reveal">Same 3 games. Completely different worlds. That's the whole point.</p>
+    <p class="age-close reveal">Don't worry about whether your child is "too old" for this. The only question that matters is which interest they love most — because that's where all the fun comes from.</p>
+  </div>
+</section>
+
+<!-- ===== 6. GAME PREVIEW ===== -->
+<section id="preview">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Game Preview</span>
+      <h2>What Your Child Will See</h2>
+      <p>Real demos of our games. Colorful, fun, and themed around THEIR world.</p>
+    </div>
+    <div class="game-videos-grid">
+      <!-- MEMORY -->
+      <div class="game-video-card reveal d1">
+        <div class="game-video-badge" style="--badge-color:#FF6B9D">Memory</div>
+        <h3 class="game-video-title">Memory Match</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/vtqSbccmuCk?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Memory Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <p class="game-video-desc">Find matching pairs using characters from your child's world. Strengthens recall &amp; working memory.</p>
+      </div>
+      <!-- ATTENTION -->
+      <div class="game-video-card reveal d2">
+        <div class="game-video-badge" style="--badge-color:#4ECDC4">Attention</div>
+        <h3 class="game-video-title">Focus Finder</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/S8S2ukL9TeY?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Attention Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <p class="game-video-desc">Spot differences and filter distractions in themed scenes. Builds concentration &amp; visual attention.</p>
+      </div>
+      <!-- SPEED -->
+      <div class="game-video-card reveal d3">
+        <div class="game-video-badge" style="--badge-color:#FFE66D;color:#1A1A2E">Speed</div>
+        <h3 class="game-video-title">Speed Dash</h3>
+        <div class="game-video-container">
+          <iframe
+            src="https://www.youtube.com/embed/ozjo_IAoStg?rel=0&amp;modestbranding=1&amp;playsinline=1"
+            title="KidsBrain Speed Game Demo"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+        <p class="game-video-desc">Quick-fire challenges where fast thinking wins. Sharpens processing speed &amp; reactions.</p>
+      </div>
+    </div>
+    <p class="preview-note reveal">All visuals, questions, and content are themed around <strong>YOUR child's interests</strong>.</p>
+  </div>
+</section>
+
+<!-- ===== 6.5 SEE IT IN ACTION (Real Results) ===== -->
+<section id="real-results">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow" style="color:var(--green)">Real Results</span>
+      <h2>See It In Action</h2>
+      <p>This is what it looks like when a child gets their own personalized brain training platform.</p>
+    </div>
+    <div class="results-showcase">
+      <!-- LEFT: Photo -->
+      <div class="results-photo-wrapper reveal d1">
+        <img src="kidsbrain-result-photo.jpg" alt="Happy child showing KidsBrain games on iPad" class="results-photo" loading="lazy" onerror="this.style.display='none';this.closest('.results-photo-wrapper').classList.add('no-photo')">
+        <div class="results-photo-ph" aria-hidden="true"><span class="ph-emoji">📸</span><span>Real user photo</span></div>
+        <div class="results-photo-caption">A real KidsBrain user with their personalized game platform</div>
+      </div>
+      <!-- RIGHT: Video + Text -->
+      <div class="results-content reveal d2">
+        <div class="results-quote">
+          <span class="results-quote-icon">&ldquo;</span>
+          <p>He asks to play his brain games every single day. I've never seen him this excited about something educational.</p>
+          <span class="results-quote-author">— KidsBrain Parent</span>
+        </div>
+        <div class="results-video-wrapper">
+          <div class="results-video-label">Watch the platform in action:</div>
+          <div class="results-video-container">
+            <iframe src="https://www.youtube.com/embed/1vwXKkoUyXg?rel=0&amp;modestbranding=1&amp;playsinline=1" title="KidsBrain Platform Demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+        </div>
+        <div class="results-highlights">
+          <div class="results-highlight-item"><span class="results-highlight-emoji">🧠</span><span>3 cognitive skill categories</span></div>
+          <div class="results-highlight-item"><span class="results-highlight-emoji">🎮</span><span>Games themed to child's interests</span></div>
+          <div class="results-highlight-item"><span class="results-highlight-emoji">📈</span><span>Progress tracked automatically</span></div>
+          <div class="results-highlight-item"><span class="results-highlight-emoji">😍</span><span>Kids love it — parents see results</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 7. HOW IT WORKS ===== -->
+<section id="how">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">How It Works</span>
+      <h2>Simple as 1-2-3</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal d1" style="--accent:var(--teal)">
+        <div class="num">1</div>
+        <h3>You Tell Us</h3>
+        <p>Share your child's name, age, interests, and which skill to focus on.</p>
+        <span class="tag">⏱️ 5 min chat</span>
+      </div>
+      <div class="step-arrow reveal d1">→</div>
+      <div class="step reveal d2" style="--accent:var(--pink)">
+        <div class="num">2</div>
+        <h3>We Build</h3>
+        <p>We create 3 custom games themed around what your child loves most.</p>
+        <span class="tag">🛠️ Handcrafted</span>
+      </div>
+      <div class="step-arrow reveal d2">→</div>
+      <div class="step reveal d3" style="--accent:var(--yellow)">
+        <div class="num">3</div>
+        <h3>They Play</h3>
+        <p>Your child gets their own account with personalized games ready to go.</p>
+        <span class="tag">⚡ Instant access</span>
+      </div>
+    </div>
+    <p class="highlight-box howit-bottom reveal"><strong>Result:</strong> Your child plays games they LOVE while their memory, attention, and thinking speed grow stronger every day.</p>
+  </div>
+</section>
+
+<!-- ===== 8. PARENT DASHBOARD ===== -->
+<section id="dashboard">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Parent Dashboard</span>
+      <h2>See Your Child's Brain Growing Every Day</h2>
+      <p>A simple dashboard that shows real progress in memory, attention, and speed.</p>
+    </div>
+    <div class="dash reveal" id="dash">
+      <div class="dash-panel">
+        <div class="dash-head">
+          <h3>Emma's Progress Dashboard</h3>
+          <span class="badge-active"><span class="pulse"></span>Active</span>
+        </div>
+        <div class="metric">
+          <div class="m-top"><span class="m-name">🧠 Memory</span><span class="m-gain" style="color:var(--pink)">+52% in 10 days</span></div>
+          <div class="bar"><div class="bar-fill" data-pct="82%" data-start="30" style="--accent:var(--pink);--accent2:#ff9cbd"></div></div>
+        </div>
+        <div class="metric">
+          <div class="m-top"><span class="m-name">🎯 Attention</span><span class="m-gain" style="color:var(--teal)">+40% in 10 days</span></div>
+          <div class="bar"><div class="bar-fill" data-pct="65%" data-start="25" style="--accent:var(--teal);--accent2:#8be3dd"></div></div>
+        </div>
+        <div class="metric">
+          <div class="m-top"><span class="m-name">⚡ Speed</span><span class="m-gain" style="color:var(--yellow)">+38% in 10 days</span></div>
+          <div class="bar"><div class="bar-fill" data-pct="73%" data-start="35" style="--accent:var(--yellow);--accent2:#fff0a8"></div></div>
+        </div>
+      </div>
+      <div class="dash-stats">
+        <div class="stat"><div class="big tealc">12</div><div class="lbl">Sessions This Week</div></div>
+        <div class="stat"><div class="big">18<span style="font-size:16px"> min</span></div><div class="lbl">Avg Session</div></div>
+        <div class="stat"><div class="big">7<span style="font-size:16px"> days</span></div><div class="lbl">Best Streak</div></div>
+        <div class="stat"><div class="big" style="color:var(--green)">+43%</div><div class="lbl">Total Improvement</div></div>
+      </div>
+    </div>
+    <p class="dash-bottom reveal">Every day, a little bit stronger. <strong style="color:var(--teal)">You'll see it happening.</strong></p>
+  </div>
+</section>
+
+<!-- ===== 9. COMPARISON TABLE ===== -->
+<section id="compare">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Why KidsBrain</span>
+      <h2>Not Another Generic App</h2>
+    </div>
+    <div class="ctable reveal">
+      <div class="crow head">
+        <div class="c-feat">&nbsp;</div>
+        <div class="c-gen">Generic Apps</div>
+        <div class="c-kb">KidsBrain</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Content</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Same for everyone</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>Built for YOUR child</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Themes</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Generic characters</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>Your child's interests</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Screen time</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Unlimited, no control</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>Parent-controlled sessions</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Who builds it</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Algorithm</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>A real person</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Progress</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Basic or none</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>Daily growth dashboard</div>
+      </div>
+      <div class="crow">
+        <div class="c-feat">Engagement</div>
+        <div class="c-gen"><span class="m-only">Generic</span><span class="ico">✕</span>Bored in a week</div>
+        <div class="c-kb"><span class="m-only">KidsBrain</span><span class="ico">✓</span>They ask to play more</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 10. PRICING ===== -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2>Less Than a Single Tutoring Session</h2>
+    </div>
+    <div class="pricing-wrap">
+      <div class="price-card reveal d1">
+        <div class="pc-name">KidsBrain Bundle</div>
+        <div class="value-stack">
+          <div class="vs-head">Here's everything you get:</div>
+          <div class="vs-row"><span>3 custom-built games (memory, attention, speed), themed to your child</span><b>$120</b></div>
+          <div class="vs-row"><span>Personal child account + login</span><b>$20</b></div>
+          <div class="vs-row"><span>Parent progress dashboard</span><b>$40</b></div>
+          <div class="vs-row"><span>Screen-time controls</span><b>$20</b></div>
+          <div class="vs-row"><span>Multiple difficulty levels + unlimited replays</span><b>$20</b></div>
+          <div class="vs-row"><span>Up to 3 rounds of revisions until you love it</span><b>$60</b></div>
+          <div class="vs-row vs-total"><span>Total value</span><b>$280</b></div>
+        </div>
+        <div class="price-urgency">⏳ Today only — price returns to $50 at midnight</div>
+        <div class="pc-price"><span class="was">$50</span><span class="now">$30</span><span class="save-tag">Save $20 today</span></div>
+        <div class="pc-sub">one-time · no subscription · forever</div>
+        <div class="countdown-pill">Offer ends in <span data-countdown>00:00:00</span></div>
+        <ul class="price-list">
+          <li><span class="ico">✓</span>3 custom games</li>
+          <li><span class="ico">✓</span>Themed to your child's interests</li>
+          <li><span class="ico">✓</span>Personal account</li>
+          <li><span class="ico">✓</span>Parent dashboard</li>
+          <li><span class="ico">✓</span>Screen time controls</li>
+          <li><span class="ico">✓</span>Multiple difficulty levels</li>
+          <li><span class="ico">✓</span>Unlimited replays</li>
+          <li><span class="ico">✓</span>Up to 3 rounds of revisions — or 100% refund</li>
+        </ul>
+        <a href="https://ryansgames.kids/questionnaire" class="btn btn-lg">Get Started — $30 Today →</a>
+      </div>
+      <div class="price-side reveal d2">
+        <div class="cost-card">
+          <div class="label">1 hour of tutoring</div>
+          <div class="amt">$50–80<span style="font-size:15px;color:var(--text-muted)">/hr</span></div>
+        </div>
+        <div class="cost-card">
+          <div class="label">Educational app subscription</div>
+          <div class="amt">$10–15<span style="font-size:15px;color:var(--text-muted)">/month</span></div>
+        </div>
+        <div class="cost-card win">
+          <div class="label">KidsBrain — today only</div>
+          <div class="amt"><span class="was">$50</span><span class="now">$30</span></div>
+          <div class="cc-note">one-time, forever</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11.5 GUARANTEE ===== -->
+<section id="guarantee">
+  <div class="container">
+    <div class="guarantee-band reveal">
+      <div class="guar-shield">🛡️</div>
+      <span class="eyebrow" style="color:var(--green)">Zero Risk</span>
+      <h2>You Don't Risk a Single Dollar</h2>
+      <p class="guar-body">Here's my promise. I personally build your child's 3 games by hand. You get <strong>up to 3 rounds of changes</strong> — tell me what to adjust and I'll rebuild until it fits your child. If after those 3 tries you still don't love it, I refund <strong>100% of your money</strong>. No forms, no hoops, no hard feelings. You take zero risk — I take all of it.</p>
+      <div class="guar-seal">🛡️ 100% Money-Back Guarantee — or you pay nothing</div>
+      <p class="guar-kicker">So your choice is simple: a child who plays games they love and a brain that gets stronger — or $30 back in your pocket. <strong>There's no version of this where you lose.</strong></p>
+      <div class="cost-wait">
+        <div class="cw-head">What waiting costs you</div>
+        <p>Tomorrow this is <strong>$50, not $30</strong>. And tonight your child spends another 2 hours on YouTube with nothing to show for it. The deal resets at midnight — the screen-time problem doesn't.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 11. CTA / FOOTER ===== -->
+<section class="cta-final" id="cta">
+  <div class="container">
+    <h2 class="reveal">Give Your Child Games They'll Actually <em>LOVE</em></h2>
+    <p class="lead reveal d1">While their brain gets stronger every single day</p>
+    <div class="two-path reveal d1">
+      <div class="tp-head">Two ways to leave this page:</div>
+      <div class="tp-opt tp-bad"><span class="tp-num">①</span><span>Close it. Pay <strong>$50</strong> later. Your child keeps scrolling YouTube tonight.</span></div>
+      <div class="tp-opt tp-good"><span class="tp-num">②</span><span>Get started now. Pay <strong>$30</strong>. If you don't love it, get every cent back.</span></div>
+      <div class="tp-foot">One of these costs you nothing to try.</div>
+    </div>
+    <div class="cta-countdown reveal d2">⏳ Today only — offer ends in <span data-countdown>00:00:00</span></div>
+    <div class="reveal d2"><a href="https://ryansgames.kids/questionnaire" class="btn btn-pink btn-lg">Get Started — $30 Today →</a></div>
+    <div class="process-reminder reveal d2">
+      <span>Tell us about your child</span><span class="arr">→</span>
+      <span>We build the games</span><span class="arr">→</span>
+      <span>They play &amp; grow</span>
+    </div>
+    <div class="badges reveal d3">
+      <span class="tb"><span class="ico">✓</span>100% money-back</span>
+      <span class="tb"><span class="ico">🛡️</span>Screen time controlled</span>
+      <span class="tb"><span class="ico">⏳</span>$30 today (reg. $50)</span>
+      <span class="tb"><span class="ico">⭐</span>Built by a real person</span>
+    </div>
+    <p class="footnote reveal">Your child deserves games made just for them.</p>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="container">
+    <div class="brand"><span class="logo">🧠</span><span>Kids<b>Brain</b></span></div>
+    <div>Custom cognitive games for children aged 3–9.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---- Reveal on scroll ---- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var revObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('visible'); revObs.unobserve(e.target); }
+      });
+    },{threshold:.14,rootMargin:'0px 0px -8% 0px'});
+    revealEls.forEach(function(el){ revObs.observe(el); });
+  }else{
+    revealEls.forEach(function(el){ el.classList.add('visible'); });
+  }
+
+  /* ---- Sticky header: always visible (presentation mode) ---- */
+  var header = document.getElementById('siteHeader');
+  if(header) header.classList.add('show');
+
+  /* ---- Animate dashboard bars when visible ---- */
+  var dash = document.getElementById('dash');
+  function animateBars(){
+    dash.classList.add('animate');
+    dash.querySelectorAll('.bar-fill').forEach(function(bar){
+      bar.style.width = bar.getAttribute('data-pct');
+    });
+  }
+  if('IntersectionObserver' in window && dash){
+    var dashObs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ animateBars(); dashObs.unobserve(e.target); }
+      });
+    },{threshold:.35});
+    dashObs.observe(dash);
+  }else if(dash){
+    animateBars();
+  }
+
+  /* ---- Smooth-scroll for in-page anchors (with header offset) ---- */
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(ev){
+      var id = a.getAttribute('href');
+      if(id.length < 2) return;
+      var target = document.querySelector(id);
+      if(!target) return;
+      ev.preventDefault();
+      var top = target.getBoundingClientRect().top + window.pageYOffset - 64;
+      window.scrollTo({top: top, behavior: 'smooth'});
+    });
+  });
+})();
+</script>
+
+<!-- ===== PRESENTATION NAVIGATION ===== -->
+<button class="slide-arrow slide-arrow-prev hidden" id="slidePrev" type="button" aria-label="Previous slide">‹</button>
+<button class="slide-arrow slide-arrow-next" id="slideNext" type="button" aria-label="Next slide">›</button>
+<div class="slide-dots" id="slideDots" aria-label="Slide navigation"></div>
+<div class="slide-counter" id="slideCounter">1 / 14</div>
+
+<script>
+(function(){
+  "use strict";
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section'));
+  var total = sections.length;
+  if(!total) return;
+
+  var current = 0;
+  var prevBtn = document.getElementById('slidePrev');
+  var nextBtn = document.getElementById('slideNext');
+  var dotsBox = document.getElementById('slideDots');
+  var counter = document.getElementById('slideCounter');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* build clickable dots */
+  sections.forEach(function(_, i){
+    var d = document.createElement('button');
+    d.className = 'slide-dot' + (i===0 ? ' active' : '');
+    d.type = 'button';
+    d.title = 'Slide ' + (i+1);
+    d.setAttribute('aria-label', 'Go to slide ' + (i+1));
+    d.addEventListener('click', function(){ goToSlide(i); });
+    dotsBox.appendChild(d);
+  });
+  var dots = Array.prototype.slice.call(dotsBox.children);
+
+  function goToSlide(i){
+    if(i<0 || i>=total) return;
+    current = i;
+    sections[i].scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'start'});
+    updateUI();
+  }
+  function nextSlide(){ goToSlide(current + 1); }
+  function prevSlide(){ goToSlide(current - 1); }
+
+  function updateUI(){
+    prevBtn.classList.toggle('hidden', current === 0);
+    nextBtn.classList.toggle('hidden', current === total - 1);
+    dots.forEach(function(d, i){ d.classList.toggle('active', i === current); });
+    if(counter) counter.textContent = (current + 1) + ' / ' + total;
+  }
+
+  prevBtn.addEventListener('click', prevSlide);
+  nextBtn.addEventListener('click', nextSlide);
+
+  /* keyboard: left/right step slides; up/down left for native scrolling */
+  document.addEventListener('keydown', function(e){
+    var t = e.target;
+    if(t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if(e.key === 'ArrowRight'){ e.preventDefault(); nextSlide(); }
+    else if(e.key === 'ArrowLeft'){ e.preventDefault(); prevSlide(); }
+  });
+
+  /* keep arrows/dots/counter in sync when the user scrolls manually */
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          var idx = sections.indexOf(en.target);
+          if(idx !== -1 && idx !== current){ current = idx; updateUI(); }
+        }
+      });
+    }, {threshold: 0.5});
+    sections.forEach(function(s){ io.observe(s); });
+  }
+
+  /* mobile swipe — guarded so it never hijacks scrolling of tall slides */
+  var tY=0, tX=0, tT=0;
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length > 1) return;
+    tY = e.touches[0].clientY; tX = e.touches[0].clientX; tT = Date.now();
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dy = tY - e.changedTouches[0].clientY;
+    var dx = tX - e.changedTouches[0].clientX;
+    if(Date.now() - tT > 600) return;          // slow drag = a scroll, not a flick
+    if(Math.abs(dy) < 60) return;              // not enough vertical movement
+    if(Math.abs(dx) > Math.abs(dy)) return;    // mostly horizontal
+    var sec = sections[current];
+    if(sec && sec.scrollHeight > window.innerHeight + 24) return; // tall slide: let it scroll
+    if(dy > 0) nextSlide(); else prevSlide();
+  }, {passive:true});
+
+  updateUI();
+})();
+</script>
+
+<!-- ===== TODAY-ONLY COUNTDOWN (drives all [data-countdown]) ===== -->
+<script>
+(function(){
+  var els = document.querySelectorAll('[data-countdown]');
+  if(!els.length) return;
+  function nextMidnight(){ var n=new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()+1, 0,0,0,0); }
+  function pad(x){ return String(x).padStart(2,'0'); }
+  function tick(){
+    var d = nextMidnight() - new Date();
+    if(d<0) d=0;
+    var t = pad(Math.floor(d/3.6e6))+':'+pad(Math.floor((d%3.6e6)/6e4))+':'+pad(Math.floor((d%6e4)/1e3));
+    for(var i=0;i<els.length;i++) els[i].textContent = t;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

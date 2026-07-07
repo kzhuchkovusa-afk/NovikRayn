@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Tell us about your child so we can build their custom KidsBrain games.">
+<title>KidsBrain — Tell Us About Your Child</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-main:#1A1A2E;--bg-secondary:#16213E;--bg-card:#0F3460;
+  --teal:#4ECDC4;--pink:#FF6B9D;--yellow:#FFE66D;--orange:#FF8A5C;--green:#2ECC71;--red:#E74C3C;
+  --text-white:#fff;--text-body:#B8C5D6;--text-muted:#7B8DA3;
+  --radius:16px;--radius-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Inter',system-ui,-apple-system,sans-serif;
+  background:radial-gradient(1200px 600px at 50% -10%,#22244a,transparent 60%),var(--bg-main);
+  background-attachment:fixed;
+  color:var(--text-body);line-height:1.6;font-size:17px;-webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-white);line-height:1.18;letter-spacing:-.01em}
+a{color:var(--teal);text-decoration:none}
+.cname{color:var(--teal);font-weight:700}
+
+/* ---- Header ---- */
+.q-header{
+  position:sticky;top:0;z-index:50;background:rgba(22,33,62,.85);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.q-header .bar{max-width:720px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:9px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;color:#fff}
+.brand .logo{font-size:23px}
+.brand b{background:linear-gradient(135deg,var(--teal),var(--pink));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.back-link{font-size:14.5px;color:var(--text-body);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.back-link:hover{color:#fff}
+
+/* progress */
+.progress{max-width:720px;margin:0 auto;padding:0 20px 14px}
+.progress-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13.5px;color:var(--text-muted);font-weight:600}
+.progress-track{height:8px;border-radius:50px;background:rgba(255,255,255,.08);overflow:hidden}
+.progress-fill{height:100%;width:0;border-radius:50px;background:linear-gradient(90deg,var(--teal),var(--pink));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.dots{display:flex;gap:7px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.dot{
+  width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.14);
+  background:transparent;color:var(--text-muted);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;
+  cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;
+}
+.dot.done{border-color:var(--teal);color:var(--teal);background:rgba(78,205,196,.12)}
+.dot.active{border-color:transparent;color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);box-shadow:0 0 14px rgba(78,205,196,.5)}
+.dot.locked{opacity:.5;cursor:not-allowed}
+
+/* ---- Main ---- */
+.wrap{max-width:720px;margin:0 auto;padding:30px 20px 40px}
+.step{display:none}
+.step.active{display:block}
+.step.from-right{animation:inRight .42s ease}
+.step.from-left{animation:inLeft .42s ease}
+@keyframes inRight{from{opacity:0;transform:translateX(42px)}to{opacity:1;transform:none}}
+@keyframes inLeft{from{opacity:0;transform:translateX(-42px)}to{opacity:1;transform:none}}
+
+.step-emoji{font-size:40px;margin-bottom:8px}
+.step h2{font-size:clamp(26px,5vw,36px);margin-bottom:8px}
+.step .sub{font-size:16.5px;color:var(--text-body);margin-bottom:30px}
+
+.field{margin-bottom:28px}
+.field > label,.flabel{display:block;font-weight:600;color:#fff;font-size:16px;margin-bottom:10px}
+.flabel .opt-note{display:block;font-weight:400;color:var(--text-muted);font-size:13.5px;margin-top:2px}
+.req{color:var(--pink)}
+
+input[type=text],input[type=email],textarea{
+  width:100%;min-height:50px;background:var(--bg-card);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius-sm);color:#fff;font-family:inherit;font-size:16px;padding:13px 16px;transition:.2s;
+}
+textarea{min-height:90px;resize:vertical;line-height:1.5}
+input::placeholder,textarea::placeholder{color:#5d6f88}
+input:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,205,196,.18)}
+input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba(231,76,60,.15)}
+.err{display:none;color:#ff9a8f;font-size:13.5px;margin-top:7px}
+.err.show{display:block}
+
+/* option buttons */
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opts.cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.opt{
+  display:inline-flex;align-items:center;gap:9px;min-height:48px;padding:11px 16px;cursor:pointer;
+  background:var(--bg-card);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--radius-sm);
+  color:var(--text-white);font-family:inherit;font-size:15.5px;font-weight:500;text-align:left;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;position:relative;
+}
+.opt .opt-emoji{font-size:20px;flex:none}
+.opt:hover{border-color:rgba(78,205,196,.5);box-shadow:0 6px 18px rgba(0,0,0,.25);transform:translateY(-2px)}
+.opt.selected{border-color:var(--green);background:rgba(46,204,113,.12);box-shadow:0 0 0 1px var(--green),0 8px 22px rgba(46,204,113,.18);animation:pop .32s ease}
+.opt.selected::after{content:"✓";position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--green);color:#08210f;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+@keyframes pop{0%{transform:scale(.92)}55%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+/* age buttons (compact, single-select) */
+.opts.ages .opt{justify-content:center;min-width:54px;padding:11px 0;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px}
+.opt.single.selected{border-color:var(--teal);background:rgba(78,205,196,.14);box-shadow:0 0 0 1px var(--teal),0 8px 22px rgba(78,205,196,.18)}
+.opt.single.selected::after{background:var(--teal);color:#06231f}
+
+/* focus cards */
+.focus-cards{display:grid;gap:14px}
+.focus-card{
+  text-align:left;cursor:pointer;background:var(--bg-card);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:var(--radius);padding:20px 22px;transition:.2s;position:relative;color:var(--text-body);font-family:inherit;
+}
+.focus-card:hover{transform:translateY(-3px);border-color:rgba(78,205,196,.5);box-shadow:0 10px 26px rgba(0,0,0,.28)}
+.focus-card .fc-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.focus-card .fc-emoji{font-size:30px}
+.focus-card h3{font-size:20px}
+.focus-card .fc-desc{color:var(--text-white);font-size:15px;margin-bottom:6px}
+.focus-card .fc-sub{color:var(--text-muted);font-size:13.5px}
+.focus-card.selected{border-color:var(--teal);background:rgba(78,205,196,.12);box-shadow:0 0 0 1.5px var(--teal),0 12px 28px rgba(78,205,196,.2)}
+.focus-card.selected::after{content:"✓";position:absolute;top:14px;right:16px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:#06231f;font-weight:800;display:flex;align-items:center;justify-content:center}
+.sec-wrap{margin-top:20px;padding-top:20px;border-top:1px dashed rgba(255,255,255,.14);display:none}
+.sec-wrap.show{display:block;animation:inRight .4s ease}
+.sec-wrap .flabel{margin-bottom:12px}
+
+/* nav footer */
+.nav{max-width:720px;margin:0 auto;padding:8px 20px 40px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Space Grotesk',sans-serif;font-weight:600;
+  font-size:16.5px;padding:14px 28px;border:none;border-radius:50px;cursor:pointer;transition:.22s;
+}
+.btn-next{color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);box-shadow:0 10px 26px rgba(78,205,196,.3)}
+.btn-next:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 34px rgba(78,205,196,.42)}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn-next.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 10px 26px rgba(78,205,196,.3)}50%{box-shadow:0 10px 30px rgba(78,205,196,.6)}}
+.btn-back{background:transparent;border:1px solid rgba(255,255,255,.18);color:var(--text-body)}
+.btn-back:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+
+/* review / summary */
+.summary{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:8px 22px;margin-bottom:24px}
+.sumsec{padding:18px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.sumsec:last-child{border-bottom:none}
+.sumsec h4{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
+.sumrow{display:flex;gap:14px;margin-bottom:8px;font-size:15.5px}
+.sumrow:last-child{margin-bottom:0}
+.sumlabel{color:var(--text-muted);min-width:130px;flex:none}
+.sumval{color:#fff;word-break:break-word}
+.muted{color:var(--text-muted)}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-block;padding:6px 13px;border-radius:50px;background:rgba(78,205,196,.14);border:1px solid rgba(78,205,196,.3);color:#bdeee9;font-size:13.5px;font-weight:500}
+.btn-submit{width:100%;color:#08210f;background:linear-gradient(135deg,var(--green),#27c06a);box-shadow:0 10px 26px rgba(46,204,113,.3);font-size:18px;margin-bottom:16px}
+.btn-submit:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 16px 34px rgba(46,204,113,.45)}
+.btn-submit:disabled{opacity:.75;cursor:default}
+.submit-success{display:none;text-align:center;margin:4px 0 22px;padding:24px 22px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(46,204,113,.16),rgba(78,205,196,.1));border:1px solid rgba(46,204,113,.4)}
+.submit-success.show{display:block;animation:pop .4s ease}
+.submit-success p{color:#fff;font-weight:600;font-size:16.5px;margin-top:14px}
+.check-mark{width:66px;height:66px}
+.check-mark circle{fill:none;stroke:var(--green);stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151;animation:cmDraw .6s ease forwards}
+.check-mark path{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:42;stroke-dashoffset:42;animation:cmDraw .4s .5s ease forwards}
+@keyframes cmDraw{to{stroke-dashoffset:0}}
+.backup-label{text-align:center;color:var(--text-muted);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;margin:6px 0 10px}
+.review-actions{display:flex;gap:14px;flex-wrap:wrap}
+.review-actions .btn{flex:1;min-width:200px}
+.btn-copy{color:#10202b;background:linear-gradient(135deg,var(--teal),#3bb6ad);box-shadow:0 10px 26px rgba(78,205,196,.3)}
+.btn-copy:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(78,205,196,.42)}
+.btn-email{color:#fff;background:linear-gradient(135deg,var(--pink),#e85a8a);box-shadow:0 10px 26px rgba(255,107,157,.3)}
+.btn-email:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(255,107,157,.42)}
+.copy-confirm{display:none;margin-top:18px;padding:18px 20px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(46,204,113,.16),rgba(78,205,196,.1));border:1px solid rgba(46,204,113,.4);color:#fff;font-weight:600;font-size:16px;text-align:center}
+.copy-confirm.show{display:block;animation:pop .4s ease}
+.reset-row{text-align:center;margin-top:26px}
+.reset-btn{background:none;border:none;color:var(--text-muted);font-family:inherit;font-size:14px;cursor:pointer;text-decoration:underline}
+.reset-btn:hover{color:#fff}
+.save-note{text-align:center;color:var(--text-muted);font-size:13px;margin-top:6px}
+
+/* confetti */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:999;overflow:hidden}
+.confetti i{position:absolute;top:-14px;width:9px;height:15px;border-radius:2px;opacity:.95;animation:confettiFall 2.6s ease-in forwards}
+@keyframes confettiFall{to{transform:translateY(105vh) rotate(640deg);opacity:.2}}
+
+@media (max-width:560px){
+  body{font-size:16px}
+  .wrap{padding:22px 16px 30px}
+  .q-header .bar,.progress{padding-left:16px;padding-right:16px}
+  .opts.cols{grid-template-columns:1fr 1fr}
+  .nav{padding-left:16px;padding-right:16px}
+  .btn{padding:13px 20px;font-size:16px}
+  .sumrow{flex-direction:column;gap:2px}
+  .sumlabel{min-width:0}
+  .dot{width:27px;height:27px;font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important}
+  html{scroll-behavior:auto}
+}
+/* download-as-PDF button + printable document */
+.btn-pdf{color:#fff;background:linear-gradient(135deg,#6c7bff,#4b57d6);box-shadow:0 10px 26px rgba(75,87,214,.3)}
+.btn-pdf:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(75,87,214,.45)}
+#print-doc{display:none}
+#print-doc .pd-wrap{max-width:760px;margin:0 auto;color:#14213d;font-family:'Inter',Arial,sans-serif;font-size:13px;line-height:1.55}
+#print-doc .pd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #4ECDC4;padding-bottom:12px;margin-bottom:16px}
+#print-doc .pd-brand{font-family:'Space Grotesk',Arial,sans-serif;font-weight:700;font-size:20px;color:#0F3460}
+#print-doc .pd-sub{font-size:11px;color:#667a92;margin-top:2px}
+#print-doc .pd-date{font-size:11px;color:#667a92;white-space:nowrap}
+#print-doc h1{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;color:#0F3460;margin:0 0 4px}
+#print-doc h2{font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#159e5b;margin:16px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+#print-doc .pd-row{display:flex;gap:14px;padding:3px 0}
+#print-doc .pd-label{min-width:150px;flex:none;color:#6b7a90}
+#print-doc .pd-val{color:#14213d;font-weight:500}
+#print-doc .pd-foot{margin-top:22px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#8a97a8;text-align:center}
+@media print{
+  html,body{background:#fff !important}
+  body > *:not(#print-doc){display:none !important}
+  #print-doc{display:block !important}
+  @page{margin:16mm}
+}
+</style>
+</head>
+<body>
+
+<header class="q-header">
+  <div class="bar">
+    <a href="index.html" class="brand"><span class="logo">🧠</span><span>Kids<b>Brain</b></span></a>
+    <a href="index.html" class="back-link">← Back to main site</a>
+  </div>
+  <div class="progress">
+    <div class="progress-top"><span id="progText">Step 1 of 7</span><span id="progPct">14%</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+    <div class="dots" id="dots"></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- STEP 1 -->
+  <section class="step" data-step="1">
+    <div class="step-emoji">👶</div>
+    <h2>Let's start with the basics</h2>
+    <p class="sub">Tell us about your little one.</p>
+
+    <div class="field">
+      <label for="childName">Child's name <span class="req">*</span></label>
+      <input type="text" id="childName" data-field="childName" data-required data-errmsg="Please tell us your child's name" placeholder="e.g., Emma, Liam, Sofia..." autocomplete="off">
+      <div class="err" data-err-for="childName"></div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">Child's age <span class="req">*</span></span>
+      <div class="opts ages">
+        <button class="opt single" data-single="age" data-value="4">4</button>
+        <button class="opt single" data-single="age" data-value="5">5</button>
+        <button class="opt single" data-single="age" data-value="6">6</button>
+        <button class="opt single" data-single="age" data-value="7">7</button>
+        <button class="opt single" data-single="age" data-value="8">8</button>
+        <button class="opt single" data-single="age" data-value="9">9</button>
+        <button class="opt single" data-single="age" data-value="10">10</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">Child's gender <span class="opt-note">Optional — helps us pick the right game characters</span></span>
+      <div class="opts">
+        <button class="opt single" data-single="gender" data-value="Boy"><span class="opt-emoji">👦</span>Boy</button>
+        <button class="opt single" data-single="gender" data-value="Girl"><span class="opt-emoji">👧</span>Girl</button>
+        <button class="opt single" data-single="gender" data-value="Prefer not to say">Prefer not to say</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" data-step="2">
+    <div class="step-emoji">✨</div>
+    <h2>What does <span class="cname">your child</span> go crazy about?</h2>
+    <p class="sub">Pick everything that excites them. The more we know, the better the games.</p>
+
+    <div class="field">
+      <div class="opts cols">
+        <button class="opt" data-group="interests" data-value="Dinosaurs"><span class="opt-emoji">🦖</span>Dinosaurs</button>
+        <button class="opt" data-group="interests" data-value="Minecraft"><span class="opt-emoji">⛏️</span>Minecraft</button>
+        <button class="opt" data-group="interests" data-value="Roblox"><span class="opt-emoji">🎮</span>Roblox</button>
+        <button class="opt" data-group="interests" data-value="Spider-Man / Superheroes"><span class="opt-emoji">🕷️</span>Spider-Man / Superheroes</button>
+        <button class="opt" data-group="interests" data-value="Football (Soccer)"><span class="opt-emoji">⚽</span>Football (Soccer)</button>
+        <button class="opt" data-group="interests" data-value="Basketball"><span class="opt-emoji">🏀</span>Basketball</button>
+        <button class="opt" data-group="interests" data-value="Space & Planets"><span class="opt-emoji">🚀</span>Space &amp; Planets</button>
+        <button class="opt" data-group="interests" data-value="SpongeBob"><span class="opt-emoji">🧽</span>SpongeBob</button>
+        <button class="opt" data-group="interests" data-value="Unicorns & Princesses"><span class="opt-emoji">🦄</span>Unicorns &amp; Princesses</button>
+        <button class="opt" data-group="interests" data-value="Cars & Racing"><span class="opt-emoji">🚗</span>Cars &amp; Racing</button>
+        <button class="opt" data-group="interests" data-value="Animals & Pets"><span class="opt-emoji">🐾</span>Animals &amp; Pets</button>
+        <button class="opt" data-group="interests" data-value="Lego"><span class="opt-emoji">🧱</span>Lego</button>
+        <button class="opt" data-group="interests" data-value="Pokemon"><span class="opt-emoji">⚡</span>Pokemon</button>
+        <button class="opt" data-group="interests" data-value="Cooking & Food"><span class="opt-emoji">🍳</span>Cooking &amp; Food</button>
+        <button class="opt" data-group="interests" data-value="Music & Dancing"><span class="opt-emoji">🎵</span>Music &amp; Dancing</button>
+        <button class="opt" data-group="interests" data-value="Hot Wheels"><span class="opt-emoji">🏎️</span>Hot Wheels</button>
+        <button class="opt" data-group="interests" data-value="Mermaids & Ocean"><span class="opt-emoji">🧜</span>Mermaids &amp; Ocean</button>
+        <button class="opt" data-group="interests" data-value="Robots & Technology"><span class="opt-emoji">🤖</span>Robots &amp; Technology</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="interestsOther">Something else they love?</label>
+      <input type="text" id="interestsOther" data-field="interestsOther" placeholder="Something else? Type it here" autocomplete="off">
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" data-step="3">
+    <div class="step-emoji">📺</div>
+    <h2>What does <span class="cname">your child</span> watch?</h2>
+    <p class="sub">This helps us match the game vibe to what they already enjoy.</p>
+
+    <div class="field">
+      <label for="tvShows">Favorite TV shows / cartoons</label>
+      <textarea id="tvShows" data-field="tvShows" placeholder="e.g., Paw Patrol, Bluey, Cocomelon, Miraculous..."></textarea>
+    </div>
+    <div class="field">
+      <label for="youtube">Favorite YouTube channels or bloggers</label>
+      <textarea id="youtube" data-field="youtube" placeholder="e.g., MrBeast, CKN Toys, Diana and Roma..."></textarea>
+    </div>
+    <div class="field">
+      <span class="flabel">Favorite type of content</span>
+      <div class="opts">
+        <button class="opt" data-group="contentTypes" data-value="Cartoons & Animation"><span class="opt-emoji">🎬</span>Cartoons &amp; Animation</button>
+        <button class="opt" data-group="contentTypes" data-value="Gaming videos / Let's Plays"><span class="opt-emoji">🎮</span>Gaming videos / Let's Plays</button>
+        <button class="opt" data-group="contentTypes" data-value="Educational / Science"><span class="opt-emoji">🔬</span>Educational / Science</button>
+        <button class="opt" data-group="contentTypes" data-value="Funny / Comedy"><span class="opt-emoji">😂</span>Funny / Comedy</button>
+        <button class="opt" data-group="contentTypes" data-value="Sports"><span class="opt-emoji">🏆</span>Sports</button>
+        <button class="opt" data-group="contentTypes" data-value="Art & Crafts / DIY"><span class="opt-emoji">🎨</span>Art &amp; Crafts / DIY</button>
+        <button class="opt" data-group="contentTypes" data-value="Music videos"><span class="opt-emoji">🎵</span>Music videos</button>
+        <button class="opt" data-group="contentTypes" data-value="Stories & Audiobooks"><span class="opt-emoji">📖</span>Stories &amp; Audiobooks</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" data-step="4">
+    <div class="step-emoji">🧠</div>
+    <h2>What should we focus on?</h2>
+    <p class="sub">Which cognitive skills matter most to you? Pick your top priority.</p>
+
+    <div class="focus-cards">
+      <button class="focus-card" data-focus="Memory">
+        <div class="fc-head"><span class="fc-emoji">🧠</span><h3>Memory</h3></div>
+        <div class="fc-desc">Improve recall, remembering sequences, matching information.</div>
+        <div class="fc-sub">Great for kids who forget homework, lose things, or need help retaining info.</div>
+      </button>
+      <button class="focus-card" data-focus="Attention">
+        <div class="fc-head"><span class="fc-emoji">🎯</span><h3>Attention</h3></div>
+        <div class="fc-desc">Build focus, concentration, filtering out distractions.</div>
+        <div class="fc-sub">Great for kids who get distracted easily, struggle to finish tasks, or can't sit still.</div>
+      </button>
+      <button class="focus-card" data-focus="Fast Thinking">
+        <div class="fc-head"><span class="fc-emoji">⚡</span><h3>Fast Thinking</h3></div>
+        <div class="fc-desc">Speed up processing, quick decision-making, reaction time.</div>
+        <div class="fc-sub">Great for kids who take long to respond, hesitate, or need quicker thinking.</div>
+      </button>
+    </div>
+
+    <div class="sec-wrap" id="secWrap">
+      <span class="flabel">Want to add a secondary focus? <span class="opt-note">Optional</span></span>
+      <div class="opts">
+        <button class="opt single" data-focus-sec="Memory"><span class="opt-emoji">🧠</span>Memory</button>
+        <button class="opt single" data-focus-sec="Attention"><span class="opt-emoji">🎯</span>Attention</button>
+        <button class="opt single" data-focus-sec="Fast Thinking"><span class="opt-emoji">⚡</span>Fast Thinking</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="step" data-step="5">
+    <div class="step-emoji">🌟</div>
+    <h2>What are your hopes?</h2>
+    <p class="sub">What would success look like for you and <span class="cname">your child</span>?</p>
+
+    <div class="field">
+      <label for="expectation">What result would make you happiest?</label>
+      <textarea id="expectation" data-field="expectation" placeholder="e.g., I want her to enjoy learning, improve focus at school, spend screen time productively..."></textarea>
+    </div>
+    <div class="field">
+      <label for="struggles">Anything <span class="cname">your child</span> struggles with?</label>
+      <textarea id="struggles" data-field="struggles" placeholder="e.g., Can't focus for more than 5 minutes, gets frustrated easily, shy about making mistakes..."></textarea>
+    </div>
+    <div class="field">
+      <span class="flabel">How much screen time per day do you allow?</span>
+      <div class="opts">
+        <button class="opt single" data-single="screenTime" data-value="Less than 30 min">Less than 30 min</button>
+        <button class="opt single" data-single="screenTime" data-value="30 min – 1 hour">30 min – 1 hour</button>
+        <button class="opt single" data-single="screenTime" data-value="1 – 2 hours">1 – 2 hours</button>
+        <button class="opt single" data-single="screenTime" data-value="More than 2 hours">More than 2 hours</button>
+        <button class="opt single" data-single="screenTime" data-value="No strict limit">No strict limit</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 6 -->
+  <section class="step" data-step="6">
+    <div class="step-emoji">🛡️</div>
+    <h2>Any no-go zones?</h2>
+    <p class="sub">We respect your family values. Let us know if anything should be avoided.</p>
+
+    <div class="field">
+      <span class="flabel">Content to avoid</span>
+      <div class="opts">
+        <button class="opt" data-group="avoid" data-value="Violence / fighting"><span class="opt-emoji">🚫</span>Violence / fighting</button>
+        <button class="opt" data-group="avoid" data-value="Scary images / monsters"><span class="opt-emoji">🚫</span>Scary images / monsters</button>
+        <button class="opt" data-group="avoid" data-value="Competition / winners-losers"><span class="opt-emoji">🚫</span>Competition / winners-losers</button>
+        <button class="opt" data-group="avoid" data-value="Time pressure / countdown timers"><span class="opt-emoji">🚫</span>Time pressure / countdown timers</button>
+        <button class="opt" data-group="avoid" data-value="Religious content"><span class="opt-emoji">🚫</span>Religious content</button>
+        <button class="opt" data-group="avoid" data-value="Gender stereotypes"><span class="opt-emoji">🚫</span>Gender stereotypes</button>
+        <button class="opt" data-group="avoid" data-value="No restrictions"><span class="opt-emoji">✅</span>No restrictions — everything is fine</button>
+      </div>
+    </div>
+    <div class="field">
+      <label for="notes">Anything else we should know?</label>
+      <textarea id="notes" data-field="notes" placeholder="e.g., My child is color-blind, has ADHD, is sensitive to loud sounds..."></textarea>
+    </div>
+  </section>
+
+  <!-- STEP 7 -->
+  <section class="step" data-step="7">
+    <div class="step-emoji">💌</div>
+    <h2>Almost done! How do we reach you?</h2>
+    <p class="sub">We'll send you the finished games and login credentials here.</p>
+
+    <div class="field">
+      <label for="parentName">Your name <span class="req">*</span></label>
+      <input type="text" id="parentName" data-field="parentName" data-required data-errmsg="Please enter your name" placeholder="Your full name" autocomplete="name">
+      <div class="err" data-err-for="parentName"></div>
+    </div>
+    <div class="field">
+      <label for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" data-field="email" data-required data-errmsg="We need an email to send the games" placeholder="your@email.com" autocomplete="email">
+      <div class="err" data-err-for="email"></div>
+    </div>
+    <div class="field">
+      <label for="phone">Phone or WhatsApp <span class="opt-note">Optional</span></label>
+      <input type="text" id="phone" data-field="phone" placeholder="+1 (___) ___-____" autocomplete="tel">
+    </div>
+    <div class="field">
+      <span class="flabel">Preferred contact method</span>
+      <div class="opts">
+        <button class="opt single" data-single="contactMethod" data-value="Email"><span class="opt-emoji">📧</span>Email</button>
+        <button class="opt single" data-single="contactMethod" data-value="WhatsApp"><span class="opt-emoji">💬</span>WhatsApp</button>
+        <button class="opt single" data-single="contactMethod" data-value="Text/SMS"><span class="opt-emoji">📱</span>Text/SMS</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section class="step" data-step="8">
+    <div class="step-emoji">🎉</div>
+    <h2>Here's what we'll build for <span class="cname">your child</span>!</h2>
+    <p class="sub">Review everything below. We'll get started right away.</p>
+
+    <div class="summary" id="summary"></div>
+
+    <button class="btn btn-submit" id="submitBtn">✅ Submit to KidsBrain</button>
+    <div class="submit-success" id="submitSuccess" role="status" aria-live="polite">
+      <svg class="check-mark" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M14 27l8 8 16-18"/></svg>
+      <p id="submitSuccessMsg"></p>
+    </div>
+
+    <div class="backup-label">Backup options</div>
+    <div class="review-actions">
+      <button class="btn btn-copy" id="copyBtn">📋 Copy to Clipboard</button>
+      <button class="btn btn-email" id="emailBtn">✉️ Send via Email</button>
+      <button class="btn btn-pdf" id="pdfBtn">⬇ Download PDF</button>
+    </div>
+    <div class="copy-confirm" id="copyConfirm"></div>
+    <div class="reset-row"><button class="reset-btn" id="resetBtn">Start over</button></div>
+  </section>
+
+</main>
+
+<div class="nav">
+  <button class="btn btn-back" id="backBtn">← Back</button>
+  <button class="btn btn-next" id="nextBtn">Next →</button>
+</div>
+<p class="save-note">Your answers are saved automatically on this device.</p>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===== CONFIG — set your real inbox here ===== */
+  const CONTACT_EMAIL = 'kidsbrain@email.com';
+  /* Paste your deployed Google Apps Script Web App URL here (see SETUP.md). */
+  const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+
+  const STORAGE_KEY = 'kidsbrain_questionnaire_v1';
+  const TOTAL = 7;                 // input steps (step 8 is the review)
+  const REVIEW = TOTAL + 1;
+
+  const defaults = {
+    childName:'', age:'', gender:'',
+    interests:[], interestsOther:'',
+    tvShows:'', youtube:'', contentTypes:[],
+    focusPrimary:'', focusSecondary:'',
+    expectation:'', struggles:'', screenTime:'',
+    avoid:[], notes:'',
+    parentName:'', email:'', phone:'', contactMethod:''
+  };
+  let state = Object.assign({}, defaults);
+  let current = 1;
+  let maxReached = 1;
+  let confettiDone = false;
+
+  const $  = (s,c)=> (c||document).querySelector(s);
+  const $$ = (s,c)=> Array.prototype.slice.call((c||document).querySelectorAll(s));
+
+  const stepEls = $$('.step');
+  const progFill = $('#progFill'), progText = $('#progText'), progPct = $('#progPct');
+  const dotsBox = $('#dots'), backBtn = $('#backBtn'), nextBtn = $('#nextBtn');
+
+  /* ---------- persistence ---------- */
+  function save(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify({state, current, maxReached})); }catch(e){} }
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return;
+      const d = JSON.parse(raw);
+      if(d && d.state){
+        state = Object.assign({}, defaults, d.state);
+        ['interests','contentTypes','avoid'].forEach(k=>{ if(!Array.isArray(state[k])) state[k]=[]; });
+        current = Math.min(Math.max(1, d.current||1), REVIEW);
+        maxReached = Math.min(Math.max(current, d.maxReached||1), REVIEW);
+        if(current===REVIEW) confettiDone = true; // don't re-fire on refresh
+      }
+    }catch(e){}
+  }
+
+  /* ---------- helpers ---------- */
+  function displayName(){ return (state.childName||'').trim() || 'your child'; }
+  function refreshNames(){ $$('.cname').forEach(el=> el.textContent = displayName()); }
+  function isEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((v||'').trim()); }
+  function stepValid(n){
+    if(n===1) return (state.childName||'').trim()!=='' && state.age!=='';
+    if(n===7) return (state.parentName||'').trim()!=='' && isEmail(state.email);
+    return true;
+  }
+
+  /* ---------- render ---------- */
+  function buildDots(){
+    for(let i=1;i<=TOTAL;i++){
+      const b=document.createElement('button');
+      b.className='dot'; b.textContent=i; b.dataset.dot=i;
+      b.addEventListener('click', function(){
+        const target=Number(this.dataset.dot);
+        if(target<=maxReached) go(target, target<current?'back':'next');
+      });
+      dotsBox.appendChild(b);
+    }
+  }
+  function render(){
+    stepEls.forEach(el=> el.classList.toggle('active', Number(el.dataset.step)===current));
+    const pct = current>=REVIEW ? 100 : Math.round(current/TOTAL*100);
+    progFill.style.width = pct+'%';
+    progPct.textContent = pct+'%';
+    progText.textContent = current>=REVIEW ? 'All done! 🎉' : ('Step '+current+' of '+TOTAL);
+    backBtn.style.visibility = current===1 ? 'hidden' : 'visible';
+    if(current>=REVIEW){ nextBtn.style.display='none'; }
+    else{
+      nextBtn.style.display='';
+      nextBtn.textContent = current===TOTAL ? 'Review →' : 'Next →';
+      const ok = stepValid(current);
+      nextBtn.disabled = !ok;
+      nextBtn.classList.toggle('pulse', ok && (current===1||current===7));
+    }
+    $$('.dot', dotsBox).forEach(d=>{
+      const i=Number(d.dataset.dot);
+      d.classList.toggle('active', i===current);
+      d.classList.toggle('done', i<current || (i<=maxReached && i!==current));
+      d.classList.toggle('locked', i>maxReached);
+    });
+    refreshNames();
+  }
+
+  function go(n, dir){
+    current = Math.max(1, Math.min(REVIEW, n));
+    if(current>maxReached) maxReached=current;
+    stepEls.forEach(el=> el.classList.remove('from-right','from-left'));
+    render();
+    const incoming = stepEls.filter(el=> Number(el.dataset.step)===current)[0];
+    if(incoming){ void incoming.offsetWidth; incoming.classList.add(dir==='back'?'from-left':'from-right'); }
+    window.scrollTo({top:0, behavior:'smooth'});
+    if(current===REVIEW){ buildSummary(); if(!confettiDone){ launchConfetti(); confettiDone=true; } }
+    save();
+  }
+
+  /* ---------- selections ---------- */
+  function syncGroup(group){
+    $$('[data-group="'+group+'"]').forEach(b=> b.classList.toggle('selected', state[group].indexOf(b.dataset.value)>=0));
+  }
+  function toggleMulti(group, value, btn){
+    const arr = state[group], i = arr.indexOf(value);
+    if(i>=0){ arr.splice(i,1); } else { arr.push(value); }
+    if(group==='avoid'){
+      const NR='No restrictions';
+      if(value===NR && arr.indexOf(NR)>=0){ state.avoid=[NR]; }
+      else if(value!==NR && arr.indexOf(value)>=0){ state.avoid = arr.filter(v=>v!==NR); }
+      syncGroup('avoid');
+    } else { btn.classList.toggle('selected', arr.indexOf(value)>=0); }
+    save(); render();
+  }
+  function setSingle(key, value){
+    state[key]=value;
+    $$('[data-single="'+key+'"]').forEach(b=> b.classList.toggle('selected', b.dataset.value===value));
+    save(); render();
+  }
+  function setPrimary(value){
+    state.focusPrimary=value;
+    if(state.focusSecondary===value) state.focusSecondary='';
+    $$('[data-focus]').forEach(b=> b.classList.toggle('selected', b.dataset.focus===value));
+    renderSecondary(); save(); render();
+  }
+  function setSecondary(value){
+    state.focusSecondary = (state.focusSecondary===value) ? '' : value;
+    $$('[data-focus-sec]').forEach(b=> b.classList.toggle('selected', b.dataset.focusSec===state.focusSecondary && state.focusSecondary!==''));
+    save(); render();
+  }
+  function renderSecondary(){
+    const wrap = $('#secWrap');
+    if(!state.focusPrimary){ wrap.classList.remove('show'); return; }
+    wrap.classList.add('show');
+    $$('[data-focus-sec]').forEach(b=>{
+      const v=b.dataset.focusSec;
+      b.style.display = (v===state.focusPrimary) ? 'none' : '';
+      b.classList.toggle('selected', v===state.focusSecondary && state.focusSecondary!=='');
+    });
+  }
+
+  /* ---------- errors ---------- */
+  function setError(field, msg){
+    const inp = $('#'+field), box = $('[data-err-for="'+field+'"]');
+    if(inp) inp.classList.toggle('invalid', !!msg);
+    if(box){ box.textContent = msg||''; box.classList.toggle('show', !!msg); }
+  }
+  function validateField(inp){
+    const f = inp.dataset.field;
+    if(f==='email'){
+      if(!inp.value.trim()) setError(f, inp.dataset.errmsg);
+      else if(!isEmail(inp.value)) setError(f, 'Hmm, that email looks off — please check it');
+      else setError(f, '');
+    } else if(!inp.value.trim()){ setError(f, inp.dataset.errmsg); }
+    else setError(f, '');
+  }
+
+  /* ---------- summary ---------- */
+  function esc(t){ return String(t).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function row(label, val){
+    const has = val && String(val).trim();
+    return '<div class="sumrow"><span class="sumlabel">'+label+'</span><span class="sumval">'+(has?esc(val):'<span class="muted">—</span>')+'</span></div>';
+  }
+  function tagRow(label, arr, extra){
+    let inner;
+    if(arr.length){ inner = '<div class="tags">'+arr.map(t=>'<span class="tag">'+esc(t)+'</span>').join('')+'</div>'; }
+    else { inner = '<span class="muted">—</span>'; }
+    if(extra && String(extra).trim()) inner += '<div class="sumrow" style="margin-top:8px"><span class="sumlabel">Other</span><span class="sumval">'+esc(extra)+'</span></div>';
+    return '<div class="sumrow"><span class="sumlabel">'+label+'</span><span class="sumval">'+inner+'</span></div>';
+  }
+  function buildSummary(){
+    const s=state;
+    let h='';
+    h+='<div class="sumsec"><h4>Child</h4>'+row('Name', s.childName)+row('Age', s.age)+(s.gender?row('Gender', s.gender):'')+'</div>';
+    h+='<div class="sumsec"><h4>Interests</h4>'+tagRow('Loves', s.interests, s.interestsOther)+'</div>';
+    h+='<div class="sumsec"><h4>Screen Favorites</h4>'+row('TV / Cartoons', s.tvShows)+row('YouTube', s.youtube)+tagRow('Content types', s.contentTypes)+'</div>';
+    h+='<div class="sumsec"><h4>Brain Focus</h4>'+row('Primary', s.focusPrimary)+(s.focusSecondary?row('Secondary', s.focusSecondary):'')+'</div>';
+    h+='<div class="sumsec"><h4>Expectations</h4>'+row('Hoped result', s.expectation)+row('Struggles', s.struggles)+row('Screen time / day', s.screenTime)+'</div>';
+    h+='<div class="sumsec"><h4>Boundaries</h4>'+tagRow('Avoid', s.avoid)+(s.notes?row('Notes', s.notes):'')+'</div>';
+    h+='<div class="sumsec"><h4>Contact</h4>'+row('Parent', s.parentName)+row('Email', s.email)+(s.phone?row('Phone / WhatsApp', s.phone):'')+(s.contactMethod?row('Preferred', s.contactMethod):'')+'</div>';
+    $('#summary').innerHTML = h;
+  }
+  function summaryText(){
+    const s=state, L=[];
+    const v=x=> (x && String(x).trim()) ? x : '—';
+    L.push('KidsBrain — New Order');
+    L.push('==============================');
+    L.push('');
+    L.push('CHILD');
+    L.push('• Name: '+v(s.childName));
+    L.push('• Age: '+v(s.age));
+    if(s.gender) L.push('• Gender: '+s.gender);
+    L.push('');
+    L.push('INTERESTS');
+    L.push('• '+(s.interests.length? s.interests.join(', ') : '—'));
+    if(s.interestsOther) L.push('• Other: '+s.interestsOther);
+    L.push('');
+    L.push('SCREEN FAVORITES');
+    L.push('• TV / Cartoons: '+v(s.tvShows));
+    L.push('• YouTube: '+v(s.youtube));
+    L.push('• Content types: '+(s.contentTypes.length? s.contentTypes.join(', ') : '—'));
+    L.push('');
+    L.push('BRAIN FOCUS');
+    L.push('• Primary: '+v(s.focusPrimary));
+    if(s.focusSecondary) L.push('• Secondary: '+s.focusSecondary);
+    L.push('');
+    L.push('EXPECTATIONS');
+    L.push('• Hoped result: '+v(s.expectation));
+    L.push('• Struggles: '+v(s.struggles));
+    L.push('• Screen time / day: '+v(s.screenTime));
+    L.push('');
+    L.push('BOUNDARIES');
+    L.push('• Avoid: '+(s.avoid.length? s.avoid.join(', ') : '—'));
+    if(s.notes) L.push('• Notes: '+s.notes);
+    L.push('');
+    L.push('CONTACT');
+    L.push('• Parent: '+v(s.parentName));
+    L.push('• Email: '+v(s.email));
+    if(s.phone) L.push('• Phone / WhatsApp: '+s.phone);
+    if(s.contactMethod) L.push('• Preferred: '+s.contactMethod);
+    return L.join('\n');
+  }
+
+  /* ---------- copy / email ---------- */
+  function showConfirm(){
+    const box=$('#copyConfirm');
+    box.textContent = "✅ Copied! Send this to us and we'll start building "+displayName()+"'s games today.";
+    box.classList.add('show');
+  }
+  function fallbackCopy(text){
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    if(ok) showConfirm(); else alert('Could not copy automatically. Please select the summary text and copy it manually.');
+  }
+  function doCopy(){
+    const text=summaryText();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(showConfirm, ()=>fallbackCopy(text));
+    } else { fallbackCopy(text); }
+  }
+  function doEmail(){
+    const subject='New Order: '+(state.childName||'KidsBrain');
+    const body=summaryText();
+    window.location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+  }
+  /* ---------- submit to Google Sheets ---------- */
+  function scriptConfigured(){ return /^https?:\/\//.test(GOOGLE_SCRIPT_URL) && GOOGLE_SCRIPT_URL.indexOf('YOUR_GOOGLE')<0; }
+  function buildPayload(){
+    const s=state;
+    const interests = (s.interestsOther && s.interestsOther.trim())
+      ? s.interests.concat(['Other: '+s.interestsOther.trim()])
+      : s.interests.slice();
+    return {
+      childName:s.childName, age:s.age, gender:s.gender,
+      interests:interests,
+      tvShows:s.tvShows, youtubeChannels:s.youtube,
+      contentType:s.contentTypes,
+      brainFocusPrimary:s.focusPrimary, brainFocusSecondary:s.focusSecondary,
+      parentHopes:s.expectation, childStruggles:s.struggles,
+      screenTimeLimit:s.screenTime,
+      contentToAvoid:s.avoid, specialNotes:s.notes,
+      parentName:s.parentName, email:s.email, phone:s.phone, contactMethod:s.contactMethod
+    };
+  }
+  async function submitToGoogleSheets(payload){
+    if(!scriptConfigured()){ console.warn('GOOGLE_SCRIPT_URL not set — skipping cloud save (Copy / Email still work).'); return false; }
+    try{
+      await fetch(GOOGLE_SCRIPT_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+      console.log('Saved to Google Sheets'); return true;
+    }catch(err){ console.error('Failed to save:', err); return false; }
+  }
+  async function doSubmit(){
+    const btn=$('#submitBtn'); if(!btn || btn.dataset.done==='1') return;
+    btn.disabled=true; btn.textContent='Sending…';
+    await submitToGoogleSheets(buildPayload());
+    btn.dataset.done='1'; btn.textContent='✓ Submitted';
+    const box=$('#submitSuccess');
+    $('#submitSuccessMsg').textContent='Thank you! We received your answers and will start building '+displayName()+"'s games soon!";
+    box.classList.add('show');
+    if(box.scrollIntoView) box.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function resetAll(){
+    if(!window.confirm('Start over and clear all your answers?')) return;
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    state=Object.assign({}, defaults); current=1; maxReached=1; confettiDone=false;
+    $$('[data-field]').forEach(i=> i.value='');
+    $$('.opt, .focus-card').forEach(b=> b.classList.remove('selected'));
+    ['childName','parentName','email'].forEach(f=> setError(f,''));
+    renderSecondary();
+    $('#copyConfirm').classList.remove('show');
+    const sb=$('#submitBtn'); if(sb){ sb.disabled=false; sb.dataset.done=''; sb.textContent='✅ Submit to KidsBrain'; }
+    $('#submitSuccess').classList.remove('show');
+    go(1,'back');
+  }
+
+  /* ---------- confetti ---------- */
+  function launchConfetti(){
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const colors=['#4ECDC4','#FF6B9D','#FFE66D','#FF8A5C','#2ECC71'];
+    const box=document.createElement('div'); box.className='confetti';
+    for(let i=0;i<70;i++){
+      const p=document.createElement('i');
+      p.style.left=Math.random()*100+'%';
+      p.style.background=colors[i%colors.length];
+      p.style.animationDelay=(Math.random()*0.7).toFixed(2)+'s';
+      p.style.animationDuration=(2.1+Math.random()*1.4).toFixed(2)+'s';
+      box.appendChild(p);
+    }
+    document.body.appendChild(box);
+    setTimeout(()=> box.remove(), 4200);
+  }
+
+  /* ---------- hydrate from saved state ---------- */
+  function hydrate(){
+    $$('[data-field]').forEach(inp=>{ const f=inp.dataset.field; if(state[f]!=null) inp.value=state[f]; });
+    ['interests','contentTypes','avoid'].forEach(syncGroup);
+    ['gender','age','screenTime','contactMethod'].forEach(k=>{
+      $$('[data-single="'+k+'"]').forEach(b=> b.classList.toggle('selected', b.dataset.value===state[k] && state[k]!==''));
+    });
+    $$('[data-focus]').forEach(b=> b.classList.toggle('selected', b.dataset.focus===state.focusPrimary));
+    renderSecondary();
+    if(current===REVIEW) buildSummary();
+  }
+
+  /* ---------- wire up ---------- */
+  document.addEventListener('click', function(e){
+    const t=e.target.closest('[data-group],[data-single],[data-focus],[data-focus-sec]');
+    if(!t) return;
+    if(t.dataset.group){ toggleMulti(t.dataset.group, t.dataset.value, t); }
+    else if(t.dataset.single){ setSingle(t.dataset.single, t.dataset.value); }
+    else if(t.hasAttribute('data-focus')){ setPrimary(t.dataset.focus); }
+    else if(t.hasAttribute('data-focus-sec')){ setSecondary(t.dataset.focusSec); }
+  });
+  document.addEventListener('input', function(e){
+    const inp=e.target; const f=inp.dataset && inp.dataset.field; if(!f) return;
+    state[f]=inp.value;
+    if(f==='childName') refreshNames();
+    if(inp.classList.contains('invalid')) validateField(inp);
+    save(); render();
+  });
+  $$('[data-required]').forEach(inp=> inp.addEventListener('blur', ()=> validateField(inp)));
+
+  nextBtn.addEventListener('click', function(){
+    if(!stepValid(current)){
+      if(current===1){ ['childName'].forEach(f=> validateField($('#'+f))); }
+      if(current===7){ ['parentName','email'].forEach(f=> validateField($('#'+f))); }
+      return;
+    }
+    go(current+1, 'next');
+  });
+  backBtn.addEventListener('click', ()=> go(current-1, 'back'));
+  $('#copyBtn').addEventListener('click', doCopy);
+  $('#emailBtn').addEventListener('click', doEmail);
+  $('#resetBtn').addEventListener('click', resetAll);
+  $('#submitBtn').addEventListener('click', doSubmit);
+  $('#pdfBtn').addEventListener('click', downloadPDF);
+
+  /* ---------- download as PDF (via browser print) ---------- */
+  function pdRow(label, val){
+    return '<div class="pd-row"><span class="pd-label">'+label+'</span><span class="pd-val">'+(val && String(val).trim() ? esc(val) : '—')+'</span></div>';
+  }
+  function buildPrintDoc(){
+    var s=state;
+    var interests = (s.interestsOther && s.interestsOther.trim()) ? s.interests.concat(['Other: '+s.interestsOther.trim()]) : s.interests;
+    var when = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    var h = '<div class="pd-wrap">'
+      + '<div class="pd-head"><div><div class="pd-brand">🧠 KidsBrain</div><div class="pd-sub">Custom Cognitive Games — Child Questionnaire</div></div><div class="pd-date">'+when+'</div></div>'
+      + '<h1>'+esc(displayName())+"'s Game Plan</h1>"
+      + '<h2>Child</h2>'+pdRow('Name',s.childName)+pdRow('Age',s.age)+pdRow('Gender',s.gender)
+      + '<h2>Interests</h2>'+pdRow('Loves', interests.join(', '))
+      + '<h2>Screen Favorites</h2>'+pdRow('TV / Cartoons',s.tvShows)+pdRow('YouTube',s.youtube)+pdRow('Content types',s.contentTypes.join(', '))
+      + '<h2>Brain Focus</h2>'+pdRow('Primary',s.focusPrimary)+pdRow('Secondary',s.focusSecondary)
+      + '<h2>Parent Expectations</h2>'+pdRow('Hoped result',s.expectation)+pdRow('Struggles',s.struggles)+pdRow('Screen time / day',s.screenTime)
+      + '<h2>Boundaries</h2>'+pdRow('Avoid',s.avoid.join(', '))+pdRow('Notes',s.notes)
+      + '<h2>Contact</h2>'+pdRow('Parent',s.parentName)+pdRow('Email',s.email)+pdRow('Phone',s.phone)+pdRow('Preferred method',s.contactMethod)
+      + '<div class="pd-foot">Generated from the KidsBrain questionnaire · ryansgames.kids</div>'
+      + '</div>';
+    document.getElementById('print-doc').innerHTML = h;
+  }
+  function downloadPDF(){
+    buildPrintDoc();
+    var prev = document.title;
+    document.title = 'KidsBrain - ' + ((displayName()||'child').replace(/[^\w -]/g,'').trim() || 'child') + ' questionnaire';
+    window.print();
+    setTimeout(function(){ document.title = prev; }, 600);
+  }
+
+  /* ---------- init ---------- */
+  buildDots();
+  load();
+  hydrate();
+  render();
+  // entry animation for the restored step
+  const first = stepEls.filter(el=> Number(el.dataset.step)===current)[0];
+  if(first){ void first.offsetWidth; first.classList.add('from-right'); }
+})();
+</script>
+<div id="print-doc" aria-hidden="true"></div>
+</body>
+</html>
