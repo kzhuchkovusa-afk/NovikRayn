@@ -193,6 +193,27 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
   *{animation-duration:.001s !important}
   html{scroll-behavior:auto}
 }
+/* download-as-PDF button + printable document */
+.btn-pdf{color:#fff;background:linear-gradient(135deg,#6c7bff,#4b57d6);box-shadow:0 10px 26px rgba(75,87,214,.3)}
+.btn-pdf:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(75,87,214,.45)}
+#print-doc{display:none}
+#print-doc .pd-wrap{max-width:760px;margin:0 auto;color:#14213d;font-family:'Inter',Arial,sans-serif;font-size:13px;line-height:1.55}
+#print-doc .pd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #4ECDC4;padding-bottom:12px;margin-bottom:16px}
+#print-doc .pd-brand{font-family:'Space Grotesk',Arial,sans-serif;font-weight:700;font-size:20px;color:#0F3460}
+#print-doc .pd-sub{font-size:11px;color:#667a92;margin-top:2px}
+#print-doc .pd-date{font-size:11px;color:#667a92;white-space:nowrap}
+#print-doc h1{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;color:#0F3460;margin:0 0 4px}
+#print-doc h2{font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#159e5b;margin:16px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+#print-doc .pd-row{display:flex;gap:14px;padding:3px 0}
+#print-doc .pd-label{min-width:150px;flex:none;color:#6b7a90}
+#print-doc .pd-val{color:#14213d;font-weight:500}
+#print-doc .pd-foot{margin-top:22px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#8a97a8;text-align:center}
+@media print{
+  html,body{background:#fff !important}
+  body > *:not(#print-doc){display:none !important}
+  #print-doc{display:block !important}
+  @page{margin:16mm}
+}
 </style>
 </head>
 <body>
@@ -441,6 +462,7 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
     <div class="review-actions">
       <button class="btn btn-copy" id="copyBtn">📋 Copy to Clipboard</button>
       <button class="btn btn-email" id="emailBtn">✉️ Send via Email</button>
+      <button class="btn btn-pdf" id="pdfBtn">⬇ Download PDF</button>
     </div>
     <div class="copy-confirm" id="copyConfirm"></div>
     <div class="reset-row"><button class="reset-btn" id="resetBtn">Start over</button></div>
@@ -822,6 +844,37 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
   $('#emailBtn').addEventListener('click', doEmail);
   $('#resetBtn').addEventListener('click', resetAll);
   $('#submitBtn').addEventListener('click', doSubmit);
+  $('#pdfBtn').addEventListener('click', downloadPDF);
+
+  /* ---------- download as PDF (via browser print) ---------- */
+  function pdRow(label, val){
+    return '<div class="pd-row"><span class="pd-label">'+label+'</span><span class="pd-val">'+(val && String(val).trim() ? esc(val) : '—')+'</span></div>';
+  }
+  function buildPrintDoc(){
+    var s=state;
+    var interests = (s.interestsOther && s.interestsOther.trim()) ? s.interests.concat(['Other: '+s.interestsOther.trim()]) : s.interests;
+    var when = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    var h = '<div class="pd-wrap">'
+      + '<div class="pd-head"><div><div class="pd-brand">🧠 KidsBrain</div><div class="pd-sub">Custom Cognitive Games — Child Questionnaire</div></div><div class="pd-date">'+when+'</div></div>'
+      + '<h1>'+esc(displayName())+"'s Game Plan</h1>"
+      + '<h2>Child</h2>'+pdRow('Name',s.childName)+pdRow('Age',s.age)+pdRow('Gender',s.gender)
+      + '<h2>Interests</h2>'+pdRow('Loves', interests.join(', '))
+      + '<h2>Screen Favorites</h2>'+pdRow('TV / Cartoons',s.tvShows)+pdRow('YouTube',s.youtube)+pdRow('Content types',s.contentTypes.join(', '))
+      + '<h2>Brain Focus</h2>'+pdRow('Primary',s.focusPrimary)+pdRow('Secondary',s.focusSecondary)
+      + '<h2>Parent Expectations</h2>'+pdRow('Hoped result',s.expectation)+pdRow('Struggles',s.struggles)+pdRow('Screen time / day',s.screenTime)
+      + '<h2>Boundaries</h2>'+pdRow('Avoid',s.avoid.join(', '))+pdRow('Notes',s.notes)
+      + '<h2>Contact</h2>'+pdRow('Parent',s.parentName)+pdRow('Email',s.email)+pdRow('Phone',s.phone)+pdRow('Preferred method',s.contactMethod)
+      + '<div class="pd-foot">Generated from the KidsBrain questionnaire · ryansgames.kids</div>'
+      + '</div>';
+    document.getElementById('print-doc').innerHTML = h;
+  }
+  function downloadPDF(){
+    buildPrintDoc();
+    var prev = document.title;
+    document.title = 'KidsBrain - ' + ((displayName()||'child').replace(/[^\w -]/g,'').trim() || 'child') + ' questionnaire';
+    window.print();
+    setTimeout(function(){ document.title = prev; }, 600);
+  }
 
   /* ---------- init ---------- */
   buildDots();
@@ -833,5 +886,6 @@ input.invalid,textarea.invalid{border-color:var(--red);box-shadow:0 0 0 3px rgba
   if(first){ void first.offsetWidth; first.classList.add('from-right'); }
 })();
 </script>
+<div id="print-doc" aria-hidden="true"></div>
 </body>
 </html>

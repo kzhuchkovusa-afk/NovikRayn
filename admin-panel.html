@@ -123,6 +123,29 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
   .oc-actions{flex-direction:column}
   .oc-actions button{width:100%}
 }
+/* download-as-PDF: card + modal buttons and printable document */
+.oc-actions .pdf:hover{border-color:#8b97ff;color:#aeb7ff}
+.btn-pdf-mini{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:10px 18px;border-radius:50px;border:1px solid rgba(108,123,255,.5);background:rgba(108,123,255,.14);color:#aeb7ff;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;transition:.2s}
+.btn-pdf-mini:hover{background:rgba(108,123,255,.24);color:#fff}
+#print-doc{display:none}
+#print-doc .pd-wrap{max-width:760px;margin:0 auto;color:#14213d;font-family:'Inter',Arial,sans-serif;font-size:13px;line-height:1.55}
+#print-doc .pd-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;border-bottom:2px solid #4ECDC4;padding-bottom:12px;margin-bottom:14px}
+#print-doc .pd-brand{font-family:'Space Grotesk',Arial,sans-serif;font-weight:700;font-size:20px;color:#0F3460}
+#print-doc .pd-sub{font-size:11px;color:#667a92;margin-top:2px}
+#print-doc .pd-date{font-size:11px;color:#667a92;white-space:nowrap}
+#print-doc h1{font-family:'Space Grotesk',Arial,sans-serif;font-size:22px;color:#0F3460;margin:0 0 2px}
+#print-doc .pd-status{font-size:11px;color:#6b7a90;margin-bottom:6px}
+#print-doc h2{font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:#159e5b;margin:15px 0 6px;border-bottom:1px solid #e2e8f0;padding-bottom:3px}
+#print-doc .pd-row{display:flex;gap:14px;padding:3px 0}
+#print-doc .pd-label{min-width:150px;flex:none;color:#6b7a90}
+#print-doc .pd-val{color:#14213d;font-weight:500}
+#print-doc .pd-foot{margin-top:22px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:10px;color:#8a97a8;text-align:center}
+@media print{
+  html,body{background:#fff !important}
+  body > *:not(#print-doc){display:none !important}
+  #print-doc{display:block !important}
+  @page{margin:16mm}
+}
 </style>
 </head>
 <body>
@@ -314,6 +337,7 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
           '<button class="view" data-act="view">View Full Details</button>'+
           '<button class="mk-prog" data-act="prog">Mark In Progress</button>'+
           '<button class="mk-done" data-act="done">Mark Done</button>'+
+          '<button class="pdf" data-act="pdf">⬇ PDF</button>'+
         '</div>'+
       '</div>';
   }
@@ -355,7 +379,8 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
         mRow('Preferred method',o[K.method])+'</div>';
     h+='<div class="m-sec"><h4>Status</h4><div class="status-ctrl" id="statusCtrl">'+
         ['New','In Progress','Done'].map(s=>'<button data-st="'+s+'">'+s+'</button>').join('')+
-        '</div><div style="margin-top:8px;color:var(--text-muted);font-size:12.5px">Submitted: '+esc(fmtDate(o[K.ts]))+'</div></div>';
+        '</div><div style="margin-top:8px;color:var(--text-muted);font-size:12.5px">Submitted: '+esc(fmtDate(o[K.ts]))+'</div>'+
+        '<button class="btn-pdf-mini" data-modal-pdf>⬇ Download PDF of this order</button></div>';
     $('#modalBody').innerHTML=h;
     syncStatusButtons();
     $('#overlay').classList.add('show');
@@ -374,6 +399,35 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
     if(modalId===id) syncStatusButtons();
   }
 
+  /* ---------- download an order as PDF (via browser print) ---------- */
+  function opRow(label, val){
+    return '<div class="pd-row"><span class="pd-label">'+label+'</span><span class="pd-val">'+(val!=null && String(val).trim()!=='' ? esc(val) : '—')+'</span></div>';
+  }
+  function buildOrderPrintDoc(o){
+    var when = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+    var name = o[K.name] || 'Child';
+    var h = '<div class="pd-wrap">'
+      + '<div class="pd-head"><div><div class="pd-brand">🧠 KidsBrain</div><div class="pd-sub">Client Order — Questionnaire</div></div><div class="pd-date">'+when+'</div></div>'
+      + '<h1>'+esc(name)+"'s Game Plan</h1>"
+      + '<div class="pd-status">Status: '+esc(effStatus(o))+'  ·  Submitted: '+esc(fmtDate(o[K.ts]))+'</div>'
+      + '<h2>Child</h2>'+opRow('Name',o[K.name])+opRow('Age',o[K.age])+opRow('Gender',o[K.gender])
+      + '<h2>Interests &amp; Media</h2>'+opRow('Interests',o[K.interests])+opRow('TV / Cartoons',o[K.tv])+opRow('YouTube',o[K.yt])+opRow('Content types',o[K.content])
+      + '<h2>Brain Focus</h2>'+opRow('Primary',o[K.fp])+opRow('Secondary',o[K.fs])
+      + '<h2>Parent Input</h2>'+opRow('Hopes',o[K.hopes])+opRow('Struggles',o[K.struggles])+opRow('Screen time / day',o[K.screen])+opRow('Avoid',o[K.avoid])+opRow('Special notes',o[K.notes])
+      + '<h2>Contact</h2>'+opRow('Parent',o[K.parent])+opRow('Email',o[K.email])+opRow('Phone',o[K.phone])+opRow('Preferred method',o[K.method])
+      + '<div class="pd-foot">KidsBrain admin · generated '+when+'</div>'
+      + '</div>';
+    document.getElementById('print-doc').innerHTML = h;
+  }
+  function printOrder(id){
+    var o=byId[id]; if(!o) return;
+    buildOrderPrintDoc(o);
+    var prev=document.title;
+    document.title = 'KidsBrain - ' + ((o[K.name]||'order').replace(/[^\w -]/g,'').trim() || 'order') + ' order';
+    window.print();
+    setTimeout(function(){ document.title=prev; }, 600);
+  }
+
   /* ---------- events ---------- */
   document.addEventListener('click', function(e){
     const act = e.target.closest('[data-act]');
@@ -383,10 +437,13 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
       if(a==='view') openModal(id);
       else if(a==='prog') setStatus(id,'In Progress');
       else if(a==='done') setStatus(id,'Done');
+      else if(a==='pdf') printOrder(id);
       return;
     }
     const stBtn = e.target.closest('#statusCtrl button');
     if(stBtn && modalId){ setStatus(modalId, stBtn.dataset.st); return; }
+    const mPdf = e.target.closest('[data-modal-pdf]');
+    if(mPdf && modalId){ printOrder(modalId); return; }
   });
   $('#tabs').addEventListener('click', function(e){
     const t=e.target.closest('.tab'); if(!t) return;
@@ -405,5 +462,6 @@ h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif;color:var(--text-whit
   if(document.readyState!=='loading') fetchOrders();
 })();
 </script>
+<div id="print-doc"></div>
 </body>
 </html>
